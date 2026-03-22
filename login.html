@@ -259,7 +259,7 @@
         // ── Access Denied Banner ──
         // Only show if redirected from within the same app, not on direct/bookmarked open
         const cameFromApp = document.referrer && document.referrer.startsWith(window.location.origin);
-        if (sessionStorage.getItem('accessDenied') === '1' && cameFromApp) {
+        if (sessionStorage.getItem('accessDenied') === '1' ) {
             const errorMsg = document.getElementById('errorMsg');
             errorMsg.textContent = '🚫 Access Denied. Please log in with the correct account.';
             errorMsg.style.display = 'block';
