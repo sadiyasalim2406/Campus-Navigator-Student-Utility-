@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSE Exam Seating Arrangement | Campus Navigator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+        :root {
+            --bg: #F5F7F7;
+            --surface: #FFFFFF;
+            --surface2: #F0F4F4;
+            --border: #E4E7EB;
+            --border2: #CBD5E1;
+            --accent: #0F6D6D;
+            --accent2: #2FA4A4;
+            --green: #16A34A;
+            --orange: #D97706;
+            --red: #DC2626;
+            --purple: #7C3AED;
+            --teal: #0F6D6D;
+            --text-1: #333333;
+            --text-2: #6B7280;
+            --text-3: #9CA3AF;
+
+            --yr1-color: #2563EB;
+            --yr2-color: #7C3AED;
+            --yr3-color: #16A34A;
+            --yr4-color: #DC2626;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow: 0 4px 16px rgba(15, 109, 109, 0.10);
+        }
+
+        /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ══════════════════════════════════════════
+       ANIMATED BACKGROUND GLOW
+    ══════════════════════════════════════════ */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(15, 109, 109, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(47, 164, 164, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ══════════════════════════════════════════
+       LAYOUT WRAPPER
+    ══════════════════════════════════════════ */
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        /* ══════════════════════════════════════════
+       HEADER
+    ══════════════════════════════════════════ */
+        .page-header {
+            padding: 36px 0 28px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, #0F6D6D, #2FA4A4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 0 24px rgba(15, 109, 109, 0.35);
+        }
+
+        .header-text h1 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0F6D6D 30%, #2FA4A4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .header-text p {
+            font-size: 0.82rem;
+            color: var(--text-2);
+            margin-top: 4px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-2);
+            font-size: 0.83rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 7px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-1);
+            border-color: var(--border2);
+            background: var(--surface);
+        }
+
+        /* ══════════════════════════════════════════
+       STUDENT INFO LEGEND
+    ══════════════════════════════════════════ */
+        .student-info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .student-info-card h3 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+
+        .year-legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: var(--text-1);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-dot.y1 {
+            background: var(--yr1-color);
+        }
+
+        .legend-dot.y2 {
+            background: var(--yr2-color);
+        }
+
+        .legend-dot.y3 {
+            background: var(--yr3-color);
+        }
+
+        .legend-dot.y4 {
+            background: var(--yr4-color);
+        }
+
+        .student-counts {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .count-chip {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            min-width: 80px;
+        }
+
+        .count-chip .num {
+            font-size: 1.4rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .count-chip.y1 .num {
+            color: var(--yr1-color);
+        }
+
+        .count-chip.y2 .num {
+            color: var(--yr2-color);
+        }
+
+        .count-chip.y3 .num {
+            color: var(--yr3-color);
+        }
+
+        .count-chip.y4 .num {
+            color: var(--yr4-color);
+        }
+
+        .count-chip .lbl {
+            font-size: 0.72rem;
+            color: var(--text-2);
+            margin-top: 3px;
+        }
+
+        /* ══════════════════════════════════════════
+       CONTROLS BAR
+    ══════════════════════════════════════════ */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.86rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0F6D6D, #2FA4A4);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(15, 109, 109, 0.30);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 28px rgba(15, 109, 109, 0.45);
+        }
+
+        .btn-secondary {
+            background: var(--surface2);
+            color: var(--text-1);
+            border: 1px solid var(--border2);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            background: var(--surface2);
+            color: var(--red);
+            border: 1px solid var(--border2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--red);
+        }
+
+        .btn-green {
+            background: var(--surface2);
+            color: var(--green);
+            border: 1px solid var(--border2);
+        }
+
+        .btn-green:hover {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--green);
+        }
+
+        /* Keyboard shortcut badge */
+        .btn kbd {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 3px;
+            padding: 1px 5px;
+            font-size: 0.7rem;
+            font-family: monospace;
+            opacity: 0.75;
+        }
+
+        /* ══════════════════════════════════════════
+       STATS ROW
+    ══════════════════════════════════════════ */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+
+        .stat-box:hover {
+            border-color: var(--border2);
+        }
+
+        .stat-box .s-num {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--accent2), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-box .s-lbl {
+            font-size: 0.72rem;
+            color: var(--text-3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        /* ══════════════════════════════════════════
+       SEARCH BAR
+    ══════════════════════════════════════════ */
+        .search-section {
+            margin-bottom: 28px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            max-width: 500px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.18);
+        }
+
+        .search-box .ico {
+            font-size: 1rem;
+            color: var(--text-3);
+            flex-shrink: 0;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            color: var(--text-1);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-3);
+        }
+
+        .search-box button {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 6px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.83rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .search-box button:hover {
+            background: var(--accent2);
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            color: var(--text-3);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 2px 4px;
+            border-radius: 50%;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+
+        .search-clear:hover {
+            color: var(--text-1);
+        }
+
+        .search-result {
+            margin-top: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            max-width: 500px;
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .search-result.found {
+            border-color: var(--accent);
+            background: rgba(47, 129, 247, 0.07);
+        }
+
+        .search-result.not-found {
+            border-color: var(--red);
+            background: rgba(248, 81, 73, 0.06);
+        }
+
+        .search-result.visible {
+            display: block;
+        }
+
+        .sr-label {
+            font-size: 0.72rem;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .sr-reg {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--accent2);
+            margin-bottom: 4px;
+        }
+
+        .sr-loc {
+            font-size: 0.9rem;
+            color: var(--text-1);
+            line-height: 1.5;
+        }
+
+        .sr-bench-highlight {
+            display: inline-block;
+            background: rgba(47, 129, 247, 0.2);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-weight: 600;
+            color: var(--accent2);
+        }
+
+        /* ══════════════════════════════════════════
+       FLOOR DIVIDER
+    ══════════════════════════════════════════ */
+        .floor-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 36px 0 20px;
+        }
+
+        .floor-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+
+        .floor-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0F6D6D, #2FA4A4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .floor-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border2), transparent);
+        }
+
+        /* ══════════════════════════════════════════
+       ROOM GRID
+    ══════════════════════════════════════════ */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+            gap: 20px;
+        }
+
+        .room-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .room-card:hover {
+            border-color: var(--border2);
+            box-shadow: var(--shadow);
+        }
+
+        .room-card.drawing-hall {
+            border-color: rgba(188, 140, 255, 0.3);
+        }
+
+        .room-card.drawing-hall:hover {
+            border-color: rgba(188, 140, 255, 0.6);
+        }
+
+        .room-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .room-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .room-icon.regular {
+            background: rgba(47, 129, 247, 0.15);
+        }
+
+        .room-icon.drawing {
+            background: rgba(188, 140, 255, 0.15);
+        }
+
+        .room-info {
+            flex: 1;
+        }
+
+        .room-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-1);
+            line-height: 1.2;
+        }
+
+        .room-meta {
+            font-size: 0.75rem;
+            color: var(--text-2);
+            margin-top: 2px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .room-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .room-fill-bar {
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .room-fill-bar-inner {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #0F6D6D, #2FA4A4);
+            transition: width 0.6s ease;
+        }
+
+        .room-body {
+            padding: 16px 20px 20px;
+        }
+
+        /* ══════════════════════════════════════════
+       BENCH LIST
+    ══════════════════════════════════════════ */
+        .bench-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .bench-row {
+            display: grid;
+            grid-template-columns: 48px 1fr 1fr;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 10px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .bench-row:hover {
+            border-color: var(--border2);
+            background: rgba(48, 54, 61, 0.8);
+        }
+
+        .bench-row.highlighted {
+            border-color: var(--accent) !important;
+            background: rgba(47, 129, 247, 0.1) !important;
+            box-shadow: 0 0 0 2px rgba(47, 129, 247, 0.2);
+        }
+
+        .bench-num {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-3);
+            text-align: center;
+        }
+
+        .seat-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .seat-reg {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-1);
+            letter-spacing: 0.02em;
+        }
+
+        .seat-yr-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.63rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 99px;
+            width: fit-content;
+        }
+
+        .seat-yr-badge.y1 {
+            background: rgba(47, 129, 247, 0.18);
+            color: var(--yr1-color);
+        }
+
+        .seat-yr-badge.y2 {
+            background: rgba(188, 140, 255, 0.18);
+            color: var(--yr2-color);
+        }
+
+        .seat-yr-badge.y3 {
+            background: rgba(63, 185, 80, 0.18);
+            color: var(--yr3-color);
+        }
+
+        .seat-yr-badge.y4 {
+            background: rgba(248, 81, 73, 0.18);
+            color: var(--yr4-color);
+        }
+
+        .seat-empty {
+            font-size: 0.78rem;
+            color: var(--text-3);
+            font-style: italic;
+        }
+
+        .divider-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-3);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* ══════════════════════════════════════════
+       DRAWING HALL — 5-col × 12-row TABLE GRID
+    ══════════════════════════════════════════ */
+        .dh-legend {
+            font-size: 0.75rem;
+            color: var(--text-2);
+            margin-bottom: 12px;
+            padding: 6px 10px;
+            background: rgba(188, 140, 255, 0.07);
+            border: 1px solid rgba(188, 140, 255, 0.2);
+            border-radius: var(--radius-sm);
+        }
+
+        .dh-grid {
+            display: grid;
+            gap: 6px;
+        }
+
+        .dh-table {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 7px 6px 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            min-height: 68px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .dh-table:hover {
+            border-color: var(--border2);
+        }
+
+        .dh-table.occupied {
+            border-color: rgba(188, 140, 255, 0.35);
+            background: rgba(188, 140, 255, 0.06);
+        }
+
+        .dh-table.empty {
+            border-style: dashed;
+            border-color: var(--border);
+            opacity: 0.45;
+        }
+
+        .dh-table.dh-highlighted {
+            border-color: var(--accent) !important;
+            background: rgba(47, 129, 247, 0.12) !important;
+            box-shadow: 0 0 0 2px rgba(47, 129, 247, 0.25);
+        }
+
+        .dh-table-coord {
+            font-size: 0.58rem;
+            color: var(--text-3);
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .dh-reg {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-1);
+            word-break: break-all;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+
+        /* ══════════════════════════════════════════
+       EMPTY STATE
+    ══════════════════════════════════════════ */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-3);
+        }
+
+        .empty-state .es-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            color: var(--text-2);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* ══════════════════════════════════════════
+       TOAST NOTIFICATIONS
+    ══════════════════════════════════════════ */
+        .toast-container {
+            position: fixed;
+            bottom: 28px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .toast {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: var(--radius-md);
+            padding: 12px 18px;
+            font-size: 0.85rem;
+            color: var(--text-1);
+            box-shadow: var(--shadow);
+            max-width: 340px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: var(--green);
+            background: rgba(63, 185, 80, 0.1);
+        }
+
+        .toast.info {
+            border-color: var(--accent);
+            background: rgba(47, 129, 247, 0.1);
+        }
+
+        .toast.warn {
+            border-color: var(--orange);
+            background: rgba(210, 153, 34, 0.1);
+        }
+
+        /* ══════════════════════════════════════════
+       OUTPUT FORMAT PANEL (Text export)
+    ══════════════════════════════════════════ */
+        .text-output-panel {
+            margin-top: 36px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: none;
+        }
+
+        .text-output-panel.visible {
+            display: block;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-header h3 {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-2);
+        }
+
+        .text-output {
+            padding: 16px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: var(--text-1);
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.7;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* ══════════════════════════════════════════
+       PRINT STYLES
+    ══════════════════════════════════════════ */
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+            }
+
+            body::before {
+                display: none;
+            }
+
+            .controls-bar,
+            .search-section,
+            .page-header .back-link,
+            .student-info-card,
+            .toast-container,
+            .text-output-panel {
+                display: none !important;
+            }
+
+            .room-card {
+                border: 1px solid #ccc;
+                break-inside: avoid;
+                margin-bottom: 20px;
+            }
+
+            .room-header {
+                background: #f0f0f0;
+            }
+
+            .bench-row {
+                background: #f9f9f9;
+                border: 1px solid #ddd;
+            }
+
+            .seat-reg {
+                color: #000;
+            }
+
+            .seat-yr-badge {
+                border: 1px solid #ccc;
+            }
+
+            * {
+                color: #000 !important;
+                background: transparent !important;
+            }
+
+            .seat-yr-badge.y1 {
+                border-color: blue;
+            }
+
+            .seat-yr-badge.y2 {
+                border-color: purple;
+            }
+
+            .seat-yr-badge.y3 {
+                border-color: green;
+            }
+
+            .seat-yr-badge.y4 {
+                border-color: red;
+            }
+        }
+
+        /* ══════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════ */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(47, 129, 247, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(47, 129, 247, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(47, 129, 247, 0);
+            }
+        }
+
+        .generating .btn-primary {
+            animation: pulse-ring 1.2s infinite;
+        }
+
+        /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 24px 0 20px;
+            }
+
+            .header-text h1 {
+                font-size: 1.3rem;
+            }
+
+            .rooms-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bench-row {
+                grid-template-columns: 40px 1fr 1fr;
+                font-size: 0.75rem;
+            }
+
+            .bench-row.dh-row {
+                grid-template-columns: 40px 1fr 16px 1fr;
+            }
+        }
+
+        /* ══════════════════════════════════════════
+       MODE SELECTOR CARD
+    ══════════════════════════════════════════ */
+        .mode-selector-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+            transition: border-color 0.2s;
+        }
+
+        .mode-selector-card.multibatch-active {
+            border-color: var(--accent2);
+            background: rgba(47, 164, 164, 0.04);
+        }
+
+        .mode-card-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            white-space: nowrap;
+            padding-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .mode-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .mode-radio-lbl {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1.5px solid var(--border2);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-1);
+            background: var(--surface2);
+            transition: all 0.18s;
+            user-select: none;
+        }
+
+        .mode-radio-lbl input[type="radio"] {
+            accent-color: var(--accent);
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+        }
+
+        .mode-radio-lbl:hover {
+            border-color: var(--accent);
+            background: var(--surface);
+        }
+
+        .mode-radio-lbl.selected {
+            border-color: var(--accent);
+            background: rgba(15, 109, 109, 0.08);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Batch picker — shown only in multi-batch mode */
+        .batch-picker-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .bp-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-2);
+            white-space: nowrap;
+        }
+
+        .batch-cb-lbl {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border: 1px solid var(--border2);
+            border-radius: 99px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--surface2);
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .batch-cb-lbl input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 13px;
+            height: 13px;
+            flex-shrink: 0;
+        }
+
+        .batch-cb-lbl:hover {
+            border-color: var(--accent2);
+            background: var(--surface);
+        }
+
+        .batch-cb-lbl.y1 { color: var(--yr1-color); border-color: rgba(37,99,235,0.35); background: rgba(37,99,235,0.06); }
+        .batch-cb-lbl.y2 { color: var(--yr2-color); border-color: rgba(124,58,237,0.35); background: rgba(124,58,237,0.06); }
+        .batch-cb-lbl.y3 { color: var(--yr3-color); border-color: rgba(22,163,74,0.35); background: rgba(22,163,74,0.06); }
+        .batch-cb-lbl.y4 { color: var(--yr4-color); border-color: rgba(220,38,38,0.35); background: rgba(220,38,38,0.06); }
+
+        .mode-info-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: rgba(47,164,164,0.15);
+            color: var(--accent);
+            border: 1px solid rgba(47,164,164,0.35);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <!-- ── HEADER ── -->
+        <header class="page-header">
+            <div class="header-brand">
+                <div class="header-icon">📋</div>
+                <div class="header-text">
+                    <h1>CSE Exam Seating Arrangement</h1>
+                    <p>Department of Computer Science &amp; Engineering &nbsp;•&nbsp; Auto-Generated Seating</p>
+                </div>
+            </div>
+            <a href="admin.html" class="back-link">← Admin Panel</a>
+        </header>
+
+        <!-- ── STUDENT INFO CARD ── -->
+        <div class="student-info-card">
+            <div>
+                <h3>Auto-Generated Student Registry</h3>
+                <div class="year-legend">
+                    <div class="legend-item"><span class="legend-dot y1"></span> 1st Year — MEK25CS001–040</div>
+                    <div class="legend-item"><span class="legend-dot y2"></span> 2nd Year — MEK24CS001–060</div>
+                    <div class="legend-item"><span class="legend-dot y3"></span> 3rd Year — MEK23CS001–056</div>
+                    <div class="legend-item"><span class="legend-dot y4"></span> 4th Year — MEK22CS001–058</div>
+                </div>
+            </div>
+            <div class="student-counts">
+                <div class="count-chip y1"><span class="num">40</span><span class="lbl">1st Year</span></div>
+                <div class="count-chip y2"><span class="num">60</span><span class="lbl">2nd Year</span></div>
+                <div class="count-chip y3"><span class="num">56</span><span class="lbl">3rd Year</span></div>
+                <div class="count-chip y4"><span class="num">58</span><span class="lbl">4th Year</span></div>
+            </div>
+        </div>
+
+        <!-- ── SEATING MODE SELECTOR ── -->
+        <div class="mode-selector-card" id="modeSelectorCard">
+            <div class="mode-card-label">⚙️ Seating Mode</div>
+            <div class="mode-options" id="modeOptions">
+                <label class="mode-radio-lbl selected" id="lblNormal">
+                    <input type="radio" name="seatMode" value="normal" checked onchange="onModeChange(this)" />
+                    🗂️ Normal Seating
+                </label>
+                <label class="mode-radio-lbl" id="lblMulti">
+                    <input type="radio" name="seatMode" value="multibatch" onchange="onModeChange(this)" />
+                    👉 Multi-Batch Alternate Seating
+                </label>
+            </div>
+            <!-- Batch picker — visible only in multi-batch mode -->
+            <div class="batch-picker-row" id="batchPickerRow" style="display:none;">
+                <span class="bp-label">Batches to interleave:</span>
+                <label class="batch-cb-lbl y1"><input type="checkbox" class="batch-cb" value="1" checked /> 2025 — First Year</label>
+                <label class="batch-cb-lbl y2"><input type="checkbox" class="batch-cb" value="2" checked /> 2024 — Second Year</label>
+                <label class="batch-cb-lbl y3"><input type="checkbox" class="batch-cb" value="3" checked /> 2023 — Third Year</label>
+                <label class="batch-cb-lbl y4"><input type="checkbox" class="batch-cb" value="4" checked /> 2022 — Fourth Year</label>
+            </div>
+        </div>
+
+        <!-- ── CONTROLS ── -->
+        <div class="controls-bar" id="controlsBar">
+            <button class="btn btn-primary" id="btnGenerate" onclick="generateSeating()">
+                ⚡ Generate Seating
+            </button>
+            <button class="btn btn-secondary" onclick="generateSeating()" id="btnRegen" style="display:none;">
+                🔄 Randomize Again
+            </button>
+            <button class="btn btn-danger" onclick="clearSeating()" id="btnClear" style="display:none;">
+                🗑️ Clear
+            </button>
+            <button class="btn btn-green" onclick="printSeating()" id="btnPrint" style="display:none;">
+                🖨️ Print
+            </button>
+            <button class="btn btn-secondary" onclick="toggleTextOutput()" id="btnText" style="display:none;">
+                📄 Text View
+            </button>
+        </div>
+
+        <!-- ── STATS ── -->
+        <div class="stats-row" id="statsRow" style="display:none;">
+            <div class="stat-box">
+                <div class="s-num" id="st-total">0</div>
+                <div class="s-lbl">Total Students</div>
+            </div>
+            <div class="stat-box">
+                <div class="s-num" id="st-rooms">0</div>
+                <div class="s-lbl">Rooms Used</div>
+            </div>
+            <div class="stat-box">
+                <div class="s-num" id="st-benches">0</div>
+                <div class="s-lbl">Benches Filled</div>
+            </div>
+            <div class="stat-box">
+                <div class="s-num" id="st-empty">0</div>
+                <div class="s-lbl">Empty Seats</div>
+            </div>
+        </div>
+
+        <!-- ── SEARCH ── -->
+        <div class="search-section" id="searchSection" style="display:none;">
+            <div class="search-box">
+                <span class="ico">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search by register number e.g. MEK25CS012"
+                    oninput="searchStudent()" onkeydown="if(event.key==='Escape')clearSearch()" />
+                <button onclick="searchStudent()">Search</button>
+                <button class="search-clear" onclick="clearSearch()" title="Clear">✕</button>
+            </div>
+            <div class="search-result" id="searchResult"></div>
+        </div>
+
+        <!-- ── MAIN OUTPUT ── -->
+        <div id="mainOutput">
+            <div class="empty-state">
+                <div class="es-icon">🏫</div>
+                <h3>Ready to Generate</h3>
+                <p>Click <strong>Generate Seating</strong> to auto-assign all 214 students<br />
+                    across 9 rooms with randomized, mixed-year benches.</p>
+            </div>
+        </div>
+
+        <!-- ── TEXT FORMAT PANEL ── -->
+        <div class="text-output-panel" id="textOutputPanel">
+            <div class="panel-header">
+                <h3>📄 Text Format — Copy &amp; Paste Ready</h3>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem;"
+                        onclick="copyTextOutput()">📋 Copy All</button>
+                    <button class="btn btn-secondary" style="padding:6px 14px;font-size:0.8rem;"
+                        onclick="toggleTextOutput()">✕ Close</button>
+                </div>
+            </div>
+            <div class="text-output" id="textOutput"></div>
+        </div>
+
+    </div><!-- /wrapper -->
+
+    <!-- Toast container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ══════════════════════════════════════════
+     JAVASCRIPT — FULL SEATING ENGINE
+══════════════════════════════════════════ -->
+    <script src="auth.js"></script>
+    <script>
+        'use strict';
+
+        /* ──────────────────────────────────────
+           0. RBAC AUTH GUARD — Admin Only
+        ────────────────────────────────────── */
+        (function () {
+            Auth.init();
+            const user = Auth.getCurrentUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            if (user.role !== 'admin') {
+                document.body.innerHTML = `
+                <div style="
+                    min-height:100vh; display:flex; flex-direction:column;
+                    align-items:center; justify-content:center;
+                    background:#0d1117; font-family:'Inter',sans-serif; color:#e6edf3;
+                ">
+                    <div style="
+                        background:#161b22; border:1px solid #f85149;
+                        border-radius:16px; padding:40px 48px; text-align:center;
+                        max-width:480px; box-shadow:0 8px 32px rgba(248,81,73,0.18);
+                    ">
+                        <div style="font-size:3rem;margin-bottom:16px;">🚫</div>
+                        <h2 style="font-size:1.5rem;font-weight:800;color:#f85149;margin-bottom:12px;">
+                            Access Denied – Admin Only
+                        </h2>
+                        <p style="color:#8b949e;font-size:0.92rem;margin-bottom:24px;">
+                            This page is restricted to administrators only.
+                            You do not have permission to view the exam seating arrangement.
+                        </p>
+                        <a href="index.html" style="
+                            display:inline-block; background:#2f81f7; color:#fff;
+                            text-decoration:none; padding:10px 28px; border-radius:8px;
+                            font-weight:600; font-size:0.9rem;
+                        ">← Return to Student Panel</a>
+                    </div>
+                </div>`;
+                throw new Error('Access denied – not admin.');
+            }
+        })();
+
+        /* ──────────────────────────────────────
+           1. BUILDING STRUCTURE DEFINITION
+        ────────────────────────────────────── */
+        const BUILDING = [
+            {
+                floor: 'Ground Floor',
+                floorCode: 'GF',
+                rooms: [
+                    { id: 'GF-R1', classroom_number: '102', name: 'Classroom 102', type: 'regular', capacity: 60 },
+                    { id: 'GF-R2', classroom_number: '106', name: 'Classroom 106', type: 'regular', capacity: 60 },
+                ]
+            },
+            {
+                floor: 'First Floor',
+                floorCode: 'FF',
+                rooms: [
+                    { id: 'FF-R1', classroom_number: '204', name: 'Classroom 204', type: 'regular', capacity: 60 },
+                    { id: 'FF-R2', classroom_number: '206', name: 'Classroom 206', type: 'regular', capacity: 60 },
+                ]
+            },
+            {
+                floor: 'Third Floor',
+                floorCode: 'TF',
+                rooms: [
+                    { id: 'TF-R1', classroom_number: '401', name: 'Classroom 401', type: 'regular', capacity: 60 },
+                    { id: 'TF-R2', classroom_number: '405', name: 'Classroom 405', type: 'regular', capacity: 60 },
+                    { id: 'TF-R3', classroom_number: '406', name: 'Classroom 406', type: 'regular', capacity: 60 },
+                    { id: 'TF-R4', classroom_number: '409', name: 'Classroom 409', type: 'regular', capacity: 60 },
+                    { id: 'TF-DH', classroom_number: '404', name: 'Drawing Hall 404', type: 'drawing', capacity: 60, cols: 5, rows: 12 },
+                ]
+            }
+        ];
+
+
+        /* Flat list of all rooms in order */
+        const ALL_ROOMS = BUILDING.flatMap(f => f.rooms);
+
+        /* ──────────────────────────────────────
+           2. STUDENT GENERATION
+        ────────────────────────────────────── */
+        function generateStudents() {
+            const ranges = [
+                { prefix: 'MEK25CS', start: 1, end: 40, year: 1 },
+                { prefix: 'MEK24CS', start: 1, end: 60, year: 2 },
+                { prefix: 'MEK23CS', start: 1, end: 56, year: 3 },
+                { prefix: 'MEK22CS', start: 1, end: 58, year: 4 },
+            ];
+
+            const students = [];
+            for (const r of ranges) {
+                for (let n = r.start; n <= r.end; n++) {
+                    students.push({
+                        reg: r.prefix + String(n).padStart(3, '0'),
+                        year: r.year,
+                    });
+                }
+            }
+            return students;
+        }
+
+        /* ──────────────────────────────────────
+           3. FISHER-YATES SHUFFLE
+        ────────────────────────────────────── */
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        /* ──────────────────────────────────────
+           4. SEATING ALGORITHM
+           Rules:
+            - Regular rooms: 2 students per bench, mixed years
+            - Drawing Hall 404: 1 student per table, 5 cols × 12 rows
+            - Distribute evenly across all 9 venues
+            - No duplicates
+        ────────────────────────────────────── */
+        function runSeatingAlgorithm(students) {
+            const regularRooms = ALL_ROOMS.filter(r => r.type === 'regular');
+            const dhRoom = ALL_ROOMS.find(r => r.type === 'drawing');
+
+            // ── Step 1: decide how many go to drawing hall (individual seats)
+            // Even share across 9 venues, capped by drawing hall capacity (60)
+            const totalVenues = regularRooms.length + (dhRoom ? 1 : 0); // 9
+            const dhMax = dhRoom ? Math.min(dhRoom.capacity, Math.round(students.length / totalVenues)) : 0;
+
+            // ── Step 2: interleave students across years (mixed shuffle)
+            const byYear = { 1: [], 2: [], 3: [], 4: [] };
+            for (const s of students) byYear[s.year].push(s);
+            for (const y of [1, 2, 3, 4]) byYear[y] = shuffle(byYear[y]);
+
+            const pools = [shuffle(byYear[1]), shuffle(byYear[2]), shuffle(byYear[3]), shuffle(byYear[4])];
+            const interleaved = [];
+            const rem = pools.map(p => [...p]);
+            while (rem.some(p => p.length > 0)) {
+                for (const pool of rem) { if (pool.length > 0) interleaved.push(pool.shift()); }
+            }
+
+            // ── Step 3: drawing hall gets first dhMax students (already year-mixed)
+            const dhStudents = dhRoom ? interleaved.splice(0, dhMax) : [];
+
+            // ── Step 4: remaining students go to regular rooms as bench pairs
+            const workList = [...interleaved];
+
+            // Fix same-year bench adjacencies
+            for (let i = 0; i < workList.length - 1; i += 2) {
+                if (workList[i].year === workList[i + 1].year) {
+                    let swapIdx = -1;
+                    for (let j = i + 2; j < workList.length; j++) {
+                        if (workList[j].year !== workList[i].year) { swapIdx = j; break; }
+                    }
+                    if (swapIdx !== -1)
+                        [workList[i + 1], workList[swapIdx]] = [workList[swapIdx], workList[i + 1]];
+                }
+            }
+
+            const pairs = [];
+            for (let i = 0; i < workList.length; i += 2)
+                pairs.push([workList[i], workList[i + 1] || null]);
+
+            // ── Step 5: assign to roomAssignments
+            const roomAssignments = {};
+            for (const r of ALL_ROOMS) roomAssignments[r.id] = [];
+
+            // Drawing hall — store a flat array of individual students
+            if (dhRoom) roomAssignments[dhRoom.id] = dhStudents;
+
+            // Regular rooms — even bench distribution
+            const regCapacity = regularRooms.reduce((s, r) => s + Math.floor(r.capacity / 2), 0);
+            const pairsNeeded = Math.min(pairs.length, regCapacity);
+            const basePR = Math.floor(pairsNeeded / regularRooms.length);
+            let extraB = pairsNeeded % regularRooms.length;
+            let pairIdx = 0;
+            for (const room of regularRooms) {
+                const allotted = basePR + (extraB-- > 0 ? 1 : 0);
+                for (let k = 0; k < allotted && pairIdx < pairs.length; k++)
+                    roomAssignments[room.id].push(pairs[pairIdx++]);
+            }
+
+            return roomAssignments;
+        }
+
+        /* ──────────────────────────────────────
+           5. STATE
+        ────────────────────────────────────── */
+        let currentAssignments = null; // { roomId: [ [s1,s2], ... ] }
+        let lookupMap = {};            // reg -> { roomId, roomName, benchNo, floor }
+
+        /* ──────────────────────────────────────
+           6. GENERATE SEATING (main entry)
+        ────────────────────────────────────── */
+        function generateSeating() {
+            const mode = getSelectedMode();
+
+            if (mode === 'multibatch') {
+                /* ── Multi-Batch path ── */
+                const selectedYears = getSelectedYears();
+                if (selectedYears.length === 0) {
+                    showToast('warn', '⚠️ Please select at least one batch before generating.');
+                    return;
+                }
+                if (selectedYears.length === 1) {
+                    showToast('warn', '⚠️ Only one batch selected — falling back to Normal Seating for best results.');
+                    // Fall through to normal path
+                    const students = generateStudents().filter(s => s.year === selectedYears[0]);
+                    const assignments = runSeatingAlgorithm(students);
+                    currentAssignments = assignments;
+                    lookupMap = buildLookupMap(assignments);
+                    renderAll(assignments);
+                    showPostGenButtons();
+                    updateStats(students.length, assignments);
+                    localStorage.setItem('campus_exam_seating', JSON.stringify(lookupMap));
+                    showToast('info', `ℹ️ Single-batch seating generated for ${students.length} students.`);
+                    return;
+                }
+                const { roomAssignments, totalPlaced } = runMultiBatchAlgorithm(selectedYears);
+                currentAssignments = roomAssignments;
+                lookupMap = buildLookupMap(roomAssignments);
+                renderAll(roomAssignments);
+                showPostGenButtons();
+                updateStats(totalPlaced, roomAssignments);
+                localStorage.setItem('campus_exam_seating', JSON.stringify(lookupMap));
+                const yearLabels = selectedYears.map(y => ['','Y1','Y2','Y3','Y4'][y]).join(', ');
+                showToast('success', `✅ Multi-Batch seating generated! ${totalPlaced} students placed (${yearLabels}) — no same-batch bench pairs.`);
+            } else {
+                /* ── Normal path (UNCHANGED) ── */
+                const students = generateStudents();
+                const assignments = runSeatingAlgorithm(students);
+                currentAssignments = assignments;
+                lookupMap = buildLookupMap(assignments);
+                renderAll(assignments);
+                showPostGenButtons();
+                updateStats(students.length, assignments);
+                // Persist seating for student lookup
+                localStorage.setItem('campus_exam_seating', JSON.stringify(lookupMap));
+                showToast('success', '✅ Seating generated successfully! All 214 students placed.');
+            }
+        }
+
+        /* ──────────────────────────────────────
+           7. BUILD LOOKUP MAP
+        ────────────────────────────────────── */
+        function buildLookupMap(assignments) {
+            const map = {};
+            for (const floor of BUILDING) {
+                for (const room of floor.rooms) {
+                    const data = assignments[room.id] || [];
+                    if (room.type === 'drawing') {
+                        // Individual seats — flat array of students
+                        const cols = room.cols || 5;
+                        data.forEach((student, idx) => {
+                            if (!student) return;
+                            map[student.reg] = {
+                                roomId: room.id,
+                                roomName: room.name,
+                                floor: floor.floor,
+                                isDrawing: true,
+                                tableNo: idx + 1,
+                                row: Math.floor(idx / cols) + 1,
+                                col: (idx % cols) + 1,
+                                partner: null,
+                            };
+                        });
+                    } else {
+                        // Bench pairs
+                        data.forEach((pair, idx) => {
+                            for (const student of pair) {
+                                if (!student) continue;
+                                map[student.reg] = {
+                                    roomId: room.id,
+                                    roomName: room.name,
+                                    floor: floor.floor,
+                                    isDrawing: false,
+                                    benchNo: idx + 1,
+                                    partner: pair.find(s => s && s.reg !== student.reg) || null,
+                                };
+                            }
+                        });
+                    }
+                }
+            }
+            return map;
+        }
+
+        /* ──────────────────────────────────────
+           8. RENDER OUTPUT
+        ────────────────────────────────────── */
+        function renderAll(assignments) {
+            const out = document.getElementById('mainOutput');
+            let html = '';
+
+            for (const floorData of BUILDING) {
+                const floorRooms = floorData.rooms;
+                // Skip floor if all rooms are empty
+                const hasStudents = floorRooms.some(r => (assignments[r.id] || []).length > 0);
+                if (!hasStudents) continue;
+
+                html += `
+      <div class="floor-divider">
+        <div class="floor-label">
+          <div class="floor-icon">${floorData.floorCode}</div>
+          ${floorData.floor}
+        </div>
+        <div class="floor-line"></div>
+      </div>
+      <div class="rooms-grid">
+    `;
+
+                for (const room of floorRooms) {
+                    const data = assignments[room.id] || [];
+                    if (data.length === 0) continue;
+                    const isDrawing = room.type === 'drawing';
+
+                    // Meta info differs for drawing hall vs regular room
+                    let studentCount, capacityLabel, fillPct;
+                    if (isDrawing) {
+                        studentCount = data.length;
+                        capacityLabel = `🖊️ ${data.length} / ${room.capacity} tables  (${room.cols}×${room.rows})`;
+                        fillPct = Math.round((data.length / room.capacity) * 100);
+                    } else {
+                        studentCount = data.length * 2;
+                        capacityLabel = `📐 ${data.length} / ${Math.floor(room.capacity / 2)} benches`;
+                        fillPct = Math.round((data.length / Math.floor(room.capacity / 2)) * 100);
+                    }
+
+                    html += `
+        <div class="room-card ${isDrawing ? 'drawing-hall' : ''}" id="room-${room.id}">
+          <div class="room-header">
+            <div class="room-icon ${isDrawing ? 'drawing' : 'regular'}">
+              ${isDrawing ? '🎨' : '🏫'}
+            </div>
+            <div class="room-info">
+              <div class="room-name">${room.name}</div>
+              <div class="room-meta">
+                <span>🏢 ${floorData.floor}</span>
+                <span>🪑 ${studentCount} students</span>
+                <span>${capacityLabel}</span>
+              </div>
+            </div>
+          </div>
+          <div class="room-fill-bar">
+            <div class="room-fill-bar-inner" style="width:${fillPct}%"></div>
+          </div>
+          <div class="room-body">
+            ${isDrawing
+                            ? renderDrawingHallGrid(data, room.cols || 5, room.rows || 12)
+                            : `<div class="bench-list">${data.map((pair, idx) => renderBenchRow(idx + 1, pair)).join('')}</div>`
+                        }
+          </div>
+        </div>
+      `;
+                }
+
+                html += `</div>`; // /rooms-grid
+            }
+
+            out.innerHTML = html || `<div class="empty-state">
+    <div class="es-icon">⚠️</div>
+    <h3>No seating generated</h3>
+    <p>Click Generate Seating to start.</p>
+  </div>`;
+        }
+
+        function renderBenchRow(benchNum, pair) {
+            const [s1, s2] = pair;
+            return `
+    <div class="bench-row" id="bench-${s1 ? s1.reg : ''}-${s2 ? s2.reg : ''}" data-bench="${benchNum}">
+      <div class="bench-num">B${benchNum}</div>
+      ${renderSeatCell(s1)}
+      ${renderSeatCell(s2)}
+    </div>
+  `;
+        }
+
+        function renderSeatCell(student) {
+            if (!student)
+                return `<div class="seat-cell"><span class="seat-empty">— empty —</span></div>`;
+            const yr = student.year;
+            return `
+    <div class="seat-cell" id="seat-${student.reg}">
+      <span class="seat-reg">${student.reg}</span>
+      <span class="seat-yr-badge y${yr}">${['', 'Y1', 'Y2', 'Y3', 'Y4'][yr]}</span>
+    </div>
+  `;
+        }
+
+        /* Drawing Hall — 5-col × 12-row individual table grid */
+        function renderDrawingHallGrid(students, cols, rows) {
+            const total = cols * rows;
+            let cells = '';
+            for (let i = 0; i < total; i++) {
+                const s = students[i] || null;
+                if (s) {
+                    cells += `
+          <div class="dh-table occupied" id="seat-${s.reg}" title="Row ${Math.floor(i / cols) + 1}, Col ${(i % cols) + 1}">
+            <div class="dh-table-coord">R${Math.floor(i / cols) + 1}·C${(i % cols) + 1}</div>
+            <div class="dh-reg">${s.reg}</div>
+            <span class="seat-yr-badge y${s.year}">${['', 'Y1', 'Y2', 'Y3', 'Y4'][s.year]}</span>
+          </div>`;
+                } else {
+                    cells += `<div class="dh-table empty"><div class="dh-table-coord">R${Math.floor(i / cols) + 1}·C${(i % cols) + 1}</div><span class="seat-empty">—</span></div>`;
+                }
+            }
+            return `
+      <div class="dh-legend">🪑 Drawing table &amp; stool — 1 student per table &nbsp;|&nbsp; ${cols} columns × ${rows} rows</div>
+      <div class="dh-grid" style="grid-template-columns:repeat(${cols},1fr)">${cells}</div>
+    `;
+        }
+
+        /* ──────────────────────────────────────
+           9. STATS
+        ────────────────────────────────────── */
+        function updateStats(totalStudents, assignments) {
+            let roomsUsed = 0, benchesUsed = 0, emptySeats = 0;
+            for (const room of ALL_ROOMS) {
+                const data = assignments[room.id] || [];
+                if (data.length === 0) continue;
+                roomsUsed++;
+                if (room.type === 'drawing') {
+                    benchesUsed += data.length;           // each table = 1 "seat used"
+                    emptySeats += room.capacity - data.length;
+                } else {
+                    benchesUsed += data.length;           // benches used
+                    const maxB = Math.floor(room.capacity / 2);
+                    emptySeats += (maxB - data.length) * 2;
+                }
+            }
+            document.getElementById('st-total').textContent = totalStudents;
+            document.getElementById('st-rooms').textContent = roomsUsed;
+            document.getElementById('st-benches').textContent = benchesUsed;
+            document.getElementById('st-empty').textContent = emptySeats;
+
+            document.getElementById('statsRow').style.display = 'grid';
+            document.getElementById('searchSection').style.display = 'block';
+        }
+
+        /* ──────────────────────────────────────
+           10. POST-GENERATE BUTTON VISIBILITY
+        ────────────────────────────────────── */
+        function showPostGenButtons() {
+            document.getElementById('btnRegen').style.display = 'inline-flex';
+            document.getElementById('btnClear').style.display = 'inline-flex';
+            document.getElementById('btnPrint').style.display = 'inline-flex';
+            document.getElementById('btnText').style.display = 'inline-flex';
+        }
+
+        function hidePostGenButtons() {
+            document.getElementById('btnRegen').style.display = 'none';
+            document.getElementById('btnClear').style.display = 'none';
+            document.getElementById('btnPrint').style.display = 'none';
+            document.getElementById('btnText').style.display = 'none';
+        }
+
+        /* ──────────────────────────────────────
+           11. CLEAR
+        ────────────────────────────────────── */
+        function clearSeating() {
+            currentAssignments = null;
+            lookupMap = {};
+            document.getElementById('mainOutput').innerHTML = `
+    <div class="empty-state">
+      <div class="es-icon">🏫</div>
+      <h3>Ready to Generate</h3>
+      <p>Click <strong>Generate Seating</strong> to auto-assign all 214 students
+         across 9 rooms with randomized, mixed-year benches.</p>
+    </div>`;
+            document.getElementById('statsRow').style.display = 'none';
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('searchResult').className = 'search-result';
+            document.getElementById('searchResult').innerHTML = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('textOutputPanel').classList.remove('visible');
+            hidePostGenButtons();
+            localStorage.removeItem('campus_exam_seating');
+            showToast('info', '🗑️ Seating cleared.');
+        }
+
+        /* ──────────────────────────────────────
+           12. SEARCH
+        ────────────────────────────────────── */
+        function searchStudent() {
+            const raw = document.getElementById('searchInput').value.trim().toUpperCase();
+            const resEl = document.getElementById('searchResult');
+
+            if (!raw) {
+                resEl.className = 'search-result';
+                resEl.innerHTML = '';
+                // Remove any highlight
+                document.querySelectorAll('.bench-row.highlighted').forEach(el => el.classList.remove('highlighted'));
+                document.querySelectorAll('.dh-table.dh-highlighted').forEach(el => el.classList.remove('dh-highlighted'));
+                return;
+            }
+
+            if (!currentAssignments) {
+                resEl.className = 'search-result not-found visible';
+                resEl.innerHTML = `<div class="sr-label">Not Found</div><div class="sr-loc">⚠️ Please generate seating first.</div>`;
+                return;
+            }
+
+            const info = lookupMap[raw];
+
+            // Remove previous highlights
+            document.querySelectorAll('.bench-row.highlighted').forEach(el => el.classList.remove('highlighted'));
+            document.querySelectorAll('.dh-table.dh-highlighted').forEach(el => el.classList.remove('dh-highlighted'));
+
+            if (!info) {
+                resEl.className = 'search-result not-found visible';
+                resEl.innerHTML = `
+      <div class="sr-label">Not Found</div>
+      <div class="sr-loc">❌ Register number <strong>${raw}</strong> not found in seating arrangement.<br/>
+      Please check the number and try again.</div>
+    `;
+                return;
+            }
+
+            // Found — highlight seat element
+            const seatEl = document.getElementById(`seat-${raw}`);
+            if (seatEl) {
+                // For bench rows
+                const benchRow = seatEl.closest('.bench-row');
+                if (benchRow) {
+                    benchRow.classList.add('highlighted');
+                    benchRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                // For drawing hall table cells
+                const dhTable = seatEl.closest('.dh-table');
+                if (dhTable) {
+                    dhTable.classList.add('dh-highlighted');
+                    dhTable.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            resEl.className = 'search-result found visible';
+            if (info.isDrawing) {
+                resEl.innerHTML = `
+    <div class="sr-label">Student Found ✓</div>
+    <div class="sr-reg">${raw}</div>
+    <div class="sr-loc">
+      🏢 <strong>${info.floor}</strong><br/>
+      🎨 <strong>${info.roomName}</strong><br/>
+      🖊️ Table: <span class="sr-bench-highlight">Row ${info.row}, Column ${info.col}</span> (Table #${info.tableNo})<br/>
+      🪑 Drawing table &amp; stool — individual seat
+    </div>
+  `;
+            } else {
+                const partner = info.partner
+                    ? `<strong>${info.partner.reg}</strong> (${['', 'Y1', 'Y2', 'Y3', 'Y4'][info.partner.year]})`
+                    : '<em>Single seat</em>';
+                resEl.innerHTML = `
+    <div class="sr-label">Student Found ✓</div>
+    <div class="sr-reg">${raw}</div>
+    <div class="sr-loc">
+      🏢 <strong>${info.floor}</strong><br/>
+      🏫 <strong>${info.roomName}</strong><br/>
+      🪑 Bench: <span class="sr-bench-highlight">Bench ${info.benchNo}</span><br/>
+      👥 Bench Partner: ${partner}
+    </div>
+  `;
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchStudent();
+        }
+
+        /* ──────────────────────────────────────
+           13. TEXT OUTPUT
+        ────────────────────────────────────── */
+        function toggleTextOutput() {
+            const panel = document.getElementById('textOutputPanel');
+            if (!panel.classList.contains('visible')) {
+                if (currentAssignments) generateTextOutput();
+            }
+            panel.classList.toggle('visible');
+        }
+
+        function generateTextOutput() {
+            let text = '═══════════════════════════════════════════════════════\n';
+            text += '       CSE DEPARTMENT — EXAM SEATING ARRANGEMENT\n';
+            text += '═══════════════════════════════════════════════════════\n\n';
+
+            for (const floorData of BUILDING) {
+                let floorHasContent = false;
+                let floorText = `\n┌─ ${floorData.floor.toUpperCase()} ${'─'.repeat(Math.max(0, 42 - floorData.floor.length))}┐\n\n`;
+
+                for (const room of floorData.rooms) {
+                    const data = (currentAssignments || {})[room.id] || [];
+                    if (data.length === 0) continue;
+                    floorHasContent = true;
+
+                    floorText += `  ▶ ${room.name}\n`;
+                    floorText += `  ${'─'.repeat(48)}\n`;
+
+                    if (room.type === 'drawing') {
+                        // 5-column grid text layout
+                        const cols = room.cols || 5;
+                        for (let row = 0; row < (room.rows || 12); row++) {
+                            let rowStr = `  Row ${String(row + 1).padStart(2, '0')}:  `;
+                            for (let col = 0; col < cols; col++) {
+                                const s = data[row * cols + col];
+                                rowStr += (s ? s.reg : '——————————').padEnd(14);
+                            }
+                            floorText += rowStr.trimEnd() + '\n';
+                        }
+                    } else {
+                        data.forEach((pair, idx) => {
+                            const s1 = pair[0] ? pair[0].reg : '——————';
+                            const s2 = pair[1] ? pair[1].reg : '——————';
+                            floorText += `  Bench ${String(idx + 1).padStart(2, '0')}:  ${s1.padEnd(14)} –  ${s2}\n`;
+                        });
+                    }
+                    floorText += '\n';
+                }
+
+                if (floorHasContent) text += floorText;
+            }
+
+            text += '\n═══════════════════════════════════════════════════════\n';
+            text += `Generated: ${new Date().toLocaleString('en-IN')}\n`;
+            text += `Total Students: 214  |  Y1=40  Y2=60  Y3=56  Y4=58\n`;
+            text += '═══════════════════════════════════════════════════════\n';
+
+            document.getElementById('textOutput').textContent = text;
+        }
+
+        function copyTextOutput() {
+            const text = document.getElementById('textOutput').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('success', '📋 Text output copied to clipboard!');
+            }).catch(() => {
+                showToast('warn', '⚠️ Copy failed — please select and copy manually.');
+            });
+        }
+
+        /* ──────────────────────────────────────
+           14. PRINT
+        ────────────────────────────────────── */
+        function printSeating() {
+            window.print();
+        }
+
+        /* ──────────────────────────────────────
+           15. TOAST
+        ────────────────────────────────────── */
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(10px)';
+                el.style.transition = 'all 0.3s';
+                setTimeout(() => el.remove(), 320);
+            }, 3200);
+        }
+
+        /* ──────────────────────────────────────
+           16. KEYBOARD SHORTCUT
+        ────────────────────────────────────── */
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                generateSeating();
+            }
+            if (e.key === 'Escape') {
+                clearSearch();
+            }
+        });
+
+        /* ──────────────────────────────────────
+           17. INIT — show welcome toast
+        ────────────────────────────────────── */
+        window.addEventListener('DOMContentLoaded', () => {
+            showToast('info', '💡 Press <kbd>Ctrl+Enter</kbd> to generate seating instantly.');
+        });
+        /* ══════════════════════════════════════════════════════
+           18. MULTI-BATCH SEATING ALGORITHM
+           Round-robin across selected year groups, ensuring
+           no two students of the same batch share a bench.
+        ══════════════════════════════════════════════════════ */
+        function runMultiBatchAlgorithm(selectedYears) {
+            // Build per-year shuffled pools
+            const allStudents = generateStudents().filter(s => selectedYears.includes(s.year));
+            const byYear = {};
+            for (const y of selectedYears) byYear[y] = [];
+            for (const s of allStudents) byYear[s.year].push(s);
+            for (const y of selectedYears) byYear[y] = shuffle(byYear[y]);
+
+            // Strict round-robin interleave: Y1, Y2, Y3, Y4, Y1, Y2 …
+            // By construction, consecutive pairs will never be from the same batch
+            const queues = selectedYears.map(y => [...byYear[y]]);
+            const interleaved = [];
+            while (queues.some(q => q.length > 0)) {
+                for (const q of queues) { if (q.length > 0) interleaved.push(q.shift()); }
+            }
+
+            // Pair up for bench rows — adjacent = different batch by round-robin guarantee
+            // Extra pass: fix any accidental same-batch adjacency that can arise when pools
+            // have very different sizes (one batch exhausted mid-round).
+            for (let i = 0; i < interleaved.length - 1; i += 2) {
+                if (interleaved[i].year === interleaved[i + 1].year) {
+                    // Find nearest different-year student after i+2 to swap in
+                    let swapIdx = -1;
+                    for (let j = i + 2; j < interleaved.length; j++) {
+                        if (interleaved[j].year !== interleaved[i].year) { swapIdx = j; break; }
+                    }
+                    if (swapIdx !== -1)
+                        [interleaved[i + 1], interleaved[swapIdx]] = [interleaved[swapIdx], interleaved[i + 1]];
+                }
+            }
+
+            const pairs = [];
+            for (let i = 0; i < interleaved.length; i += 2)
+                pairs.push([interleaved[i], interleaved[i + 1] || null]);
+
+            // Distribute to rooms — same logic as normal mode
+            const regularRooms = ALL_ROOMS.filter(r => r.type === 'regular');
+            const dhRoom = ALL_ROOMS.find(r => r.type === 'drawing');
+            const roomAssignments = {};
+            for (const r of ALL_ROOMS) roomAssignments[r.id] = [];
+
+            // Drawing hall: proportional slice of interleaved flat list
+            const totalVenues = regularRooms.length + (dhRoom ? 1 : 0);
+            const dhMax = dhRoom
+                ? Math.min(dhRoom.capacity, Math.round(interleaved.length / totalVenues))
+                : 0;
+            if (dhRoom) roomAssignments[dhRoom.id] = interleaved.slice(0, dhMax);
+
+            // Regular rooms: pair distribution
+            // Skip pairs whose first student was already sent to drawing hall
+            const dhSet = new Set(interleaved.slice(0, dhMax).map(s => s.reg));
+            const regPairs = pairs.filter(p => !dhSet.has(p[0].reg));
+
+            const regCapacity = regularRooms.reduce((s, r) => s + Math.floor(r.capacity / 2), 0);
+            const pairsNeeded = Math.min(regPairs.length, regCapacity);
+            const basePR = Math.floor(pairsNeeded / regularRooms.length);
+            let extraB = pairsNeeded % regularRooms.length;
+            let pairIdx = 0;
+            for (const room of regularRooms) {
+                const allotted = basePR + (extraB-- > 0 ? 1 : 0);
+                for (let k = 0; k < allotted && pairIdx < regPairs.length; k++)
+                    roomAssignments[room.id].push(regPairs[pairIdx++]);
+            }
+
+            return { roomAssignments, totalPlaced: interleaved.length };
+        }
+
+        /* ══════════════════════════════════════════════════════
+           19. MODE SELECTOR HELPERS
+        ══════════════════════════════════════════════════════ */
+        function getSelectedMode() {
+            return document.querySelector('input[name="seatMode"]:checked')?.value ?? 'normal';
+        }
+
+        function getSelectedYears() {
+            // Returns array of year integers: 1, 2, 3, 4
+            return [...document.querySelectorAll('.batch-cb:checked')].map(cb => parseInt(cb.value, 10));
+        }
+
+        /* ══════════════════════════════════════════════════════
+           20. MODE RADIO CHANGE HANDLER
+        ══════════════════════════════════════════════════════ */
+        function onModeChange(radio) {
+            const isMulti = radio.value === 'multibatch';
+            const card = document.getElementById('modeSelectorCard');
+            const batchRow = document.getElementById('batchPickerRow');
+            const lblNormal = document.getElementById('lblNormal');
+            const lblMulti = document.getElementById('lblMulti');
+
+            // Toggle active styling on labels
+            lblNormal.classList.toggle('selected', !isMulti);
+            lblMulti.classList.toggle('selected', isMulti);
+
+            // Show/hide batch picker
+            batchRow.style.display = isMulti ? 'flex' : 'none';
+
+            // Highlight card border in multi-batch mode
+            card.classList.toggle('multibatch-active', isMulti);
+
+            // Reset output when switching modes to avoid confusion
+            if (currentAssignments) {
+                clearSeating();
+                showToast('info', `🔄 Mode switched to ${isMulti ? 'Multi-Batch Alternate' : 'Normal'} Seating. Please regenerate.`);
+            }
+        }
+    </script>
+</body>
+
+</html>

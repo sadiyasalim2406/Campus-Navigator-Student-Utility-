@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Campus Navigator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0F6D6D, #2FA4A4);
+            padding: 20px;
+        }
+
+        /* ── Card ── */
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            color: #1a1a2e;
+        }
+
+        /* ── Header ── */
+        .card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .card-header .logo-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .card-header h2 {
+            font-size: 26px;
+            font-weight: 600;
+            color: #0F6D6D;
+            letter-spacing: 0.06em;
+        }
+
+        .card-header p {
+            font-size: 14px;
+            font-weight: 400;
+            color: #555;
+            margin-top: 6px;
+        }
+
+        /* ── Role Toggle ── */
+        .role-toggle {
+            display: flex;
+            background: rgba(15, 109, 109, 0.08);
+            border-radius: 10px;
+            padding: 4px;
+            gap: 4px;
+            margin-bottom: 24px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 9px 12px;
+            border: none;
+            border-radius: 7px;
+            background: transparent;
+            color: #555;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .role-btn.active {
+            background: #0F6D6D;
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(15, 109, 109, 0.30);
+        }
+
+        .role-btn:hover:not(.active) {
+            color: #0F6D6D;
+        }
+
+        /* ── Error ── */
+        #errorMsg {
+            display: none;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        /* ── Inputs ── */
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px 18px;
+            background: #f5f8fc;
+            border: 1px solid #c5d5e8;
+            border-radius: 6px;
+            color: #1a1a2e;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .field input::placeholder {
+            color: #aaa;
+        }
+
+        .field input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #f5f8fc inset;
+            -webkit-text-fill-color: #1a1a2e;
+        }
+
+        .field input:focus {
+            border-color: #0F6D6D;
+            box-shadow: 0 0 0 3px rgba(15, 109, 109, 0.15);
+        }
+
+        /* ── Button ── */
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 6px;
+            background-color: #0F6D6D;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            box-shadow: 0 4px 12px rgba(15, 109, 109, 0.30);
+        }
+
+        .login-btn:hover {
+            background-color: #0C5C5C;
+            transform: scale(1.03);
+            box-shadow: 0 6px 18px rgba(15, 109, 109, 0.40);
+        }
+
+        .login-btn:active {
+            transform: scale(1.00);
+            box-shadow: 0 3px 8px rgba(15, 109, 109, 0.25);
+        }
+
+        /* ── Footer ── */
+        .card-footer {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .card-footer a {
+            color: #0F6D6D;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .card-footer a:hover {
+            color: #2FA4A4;
+            text-decoration: underline;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 24px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <div class="card-header">
+            <span class="logo-icon">🎓</span>
+            <h2>Campus Navigator</h2>
+            <p>Sign in to your account</p>
+        </div>
+
+        <!-- Role toggle — visual only, does NOT affect auth logic -->
+        <div class="role-toggle" id="roleToggle">
+            <button type="button" class="role-btn active" onclick="setRole(this)">🎓 Student</button>
+            <button type="button" class="role-btn" onclick="setRole(this)">⚙️ Admin</button>
+        </div>
+
+        <!-- Error message — ID preserved -->
+        <div id="errorMsg"></div>
+
+        <!-- Form — ID preserved, inputs preserved -->
+        <form id="loginForm" autocomplete="off">
+            <div class="field">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required placeholder="you@example.com" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <div class="card-footer">
+            Don't have an account? <a href="signup.html">Create one</a>
+        </div>
+
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // ── Access Denied Banner ──
+        // Only show if redirected from within the same app, not on direct/bookmarked open
+        const cameFromApp = document.referrer && document.referrer.startsWith(window.location.origin);
+        if (sessionStorage.getItem('accessDenied') === '1' && cameFromApp) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = '🚫 Access Denied. Please log in with the correct account.';
+            errorMsg.style.display = 'block';
+        }
+        // Always clear the flag regardless — prevents stale state
+        sessionStorage.removeItem('accessDenied');
+
+        // ── Prevent already-logged-in users from seeing login page ──
+        Auth.initProtection();
+
+        // ── Role toggle state ──
+        let selectedRole = 'student'; // default
+
+        function setRole(btn) {
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Determine selected role from button text
+            selectedRole = btn.textContent.trim().toLowerCase().includes('admin') ? 'admin' : 'student';
+        }
+
+        // ── Login with role enforcement ──
+        const loginForm = document.getElementById('loginForm');
+        const errorMsg = document.getElementById('errorMsg');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const result = Auth.login(email, password);
+
+            if (result.success) {
+                // Enforce: role must match the selected tab
+                if (result.user.role !== selectedRole) {
+                    // Immediately log out the user to avoid stale session
+                    localStorage.removeItem(Auth.CURRENT_USER_KEY);
+                    const expectedRole = selectedRole === 'admin' ? 'Admin' : 'Student';
+                    errorMsg.textContent = `🚫 Access Denied: These credentials belong to a ${result.user.role} account, not a ${expectedRole} account.`;
+                    errorMsg.style.display = 'block';
+                    return;
+                }
+                // Redirect by role
+                if (result.user.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                errorMsg.textContent = result.message;
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+
+</html>

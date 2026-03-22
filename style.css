@@ -1,0 +1,2324 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =============================================
+   CAMPUS NAVIGATOR — STANDARD MODERN UI
+   ============================================= */
+
+/* --- CSS Variables — Teal Theme --- */
+:root {
+    --primary: #1F6F6D;
+    --primary-dark: #185E5C;
+    --primary-light: rgba(31, 111, 109, 0.15);
+    --accent: #2E8B8B;
+    --bg: #F5F7F7;
+    --surface: #FFFFFF;
+    --border: #E4E7EB;
+    --text: #1A1A1A;
+    --text-muted: #5F6F73;
+    --sidebar-bg: #1F6F6D;
+    --sidebar-active: #2E8B8B;
+    --sidebar-hover: rgba(255, 255, 255, 0.12);
+    --sidebar-text: rgba(255, 255, 255, 0.85);
+    --sidebar-text-active: #ffffff;
+    --topbar-bg: #1F6F6D;
+    --shadow: 0 4px 16px rgba(31, 111, 109, 0.10);
+    --shadow-md: 0 8px 28px rgba(31, 111, 109, 0.16);
+    --radius: 10px;
+    --sidebar-w: 220px;
+    --topbar-h: 52px;
+    --transition: 0.2s ease;
+}
+
+/* --- Reset --- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    overflow: hidden;
+}
+
+/* --- App Shell --- */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+/* =============================================
+   SIDEBAR — Fixed, not scrollable
+   ============================================= */
+.sidebar {
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+.sidebar-header h2 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 10px 10px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.nav-links li {
+    margin-bottom: 2px;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--sidebar-text);
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background var(--transition), color var(--transition);
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.nav-links a:hover {
+    background: var(--sidebar-hover);
+    color: #fff;
+}
+
+.nav-links a.active {
+    background: var(--sidebar-active);
+    color: var(--sidebar-text-active);
+    border-radius: 8px;
+}
+
+.sidebar .logout-btn {
+    color: #fca5a5 !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    margin-top: 4px;
+}
+
+.sidebar .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #fff !important;
+}
+
+/* =============================================
+   MAIN CONTENT AREA
+   ============================================= */
+.main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =============================================
+   TOP BAR — Slim
+   ============================================= */
+.top-bar {
+    height: var(--topbar-h);
+    background: var(--topbar-bg);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    z-index: 900;
+}
+
+.top-bar h1 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.01em;
+}
+
+/* =============================================
+   SCROLLABLE AREA — All modules live here
+   ============================================= */
+.scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 24px;
+    background: transparent;
+}
+
+
+
+/* =============================================
+   MODULE BASE
+   ============================================= */
+.module {
+    display: none !important;
+    /* !important beats any ID-level display overrides */
+}
+
+.module.active {
+    display: block !important;
+    animation: fadeUp 0.2s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Non-home modules — transparent like Navigation module (no outer card wrapper).
+   Inner item cards (faculty-card, book-card, food-card, etc.) provide their own
+   individual card styling via their own CSS rules. */
+.module:not(#home-module):not(#navigation-module) {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* =============================================
+   NAVIGATION MODULE — Full Viewport Override
+   navigation.js injects its own premium CSS;
+   this block ensures the host layout is correct.
+   ============================================= */
+#navigation-module {
+    /* Reset card wrapper styles */
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    /* Bleed out of scroll-area's 24px padding by default */
+    margin: -24px !important;
+    width: calc(100% + 48px) !important;
+}
+
+#navigation-module.active {
+    display: flex !important;
+    flex-direction: column !important;
+    /* Fill the scroll-area height — topbar excluded from parent */
+    height: calc(100vh - var(--topbar-h)) !important;
+    overflow: hidden !important;
+}
+
+/* When nav module is active, suppress scroll-area scroll and padding */
+.scroll-area:has(#navigation-module.active) {
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Reset negative margin once scroll-area padding is gone — prevents
+   the module from sliding 24px up under the top-bar */
+.scroll-area:has(#navigation-module.active) #navigation-module.active {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+/* Section titles */
+.module h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.module h3 {
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 20px 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+}
+
+/* =============================================
+   HOME MODULE
+   ============================================= */
+#home-module {
+    /* Bleed out of scroll-area's 24px padding on all sides */
+    margin: -24px;
+    width: calc(100% + 48px);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    max-width: none;
+    flex-direction: column;
+    min-height: calc(100vh - var(--topbar-h));
+}
+
+/* Only show as flex when active — avoids specificity fight with .module { display: none } */
+#home-module.active {
+    display: flex !important;
+}
+
+.hero-section {
+    width: 100%;
+    flex: 1;
+    min-height: calc(100vh - var(--topbar-h));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('college.jpg') center/cover no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 0;
+    overflow: hidden;
+    margin: 0;
+}
+
+.hero-overlay {
+    width: 100%;
+    flex: 1;
+    min-height: calc(100vh - var(--topbar-h));
+    background: linear-gradient(rgba(31, 111, 109, 0.65), rgba(31, 111, 109, 0.65));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 32px;
+    color: #fff;
+    margin: 0;
+}
+
+.hero-overlay h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    border: none;
+    padding: 0;
+    color: #FFFFFF;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
+}
+
+.hero-overlay p {
+    font-size: 0.95rem;
+    opacity: 1;
+    font-weight: 500;
+    color: #E0F2F1;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.20);
+}
+
+/* Feature Cards */
+.home-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 18px;
+    padding: 24px 20px;
+    text-align: center;
+    cursor: default;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.feature-card:hover {
+    box-shadow: 0 12px 35px rgba(31, 111, 109, 0.25);
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.50);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.feature-card h3 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #111111;
+    margin: 0 0 6px;
+    text-transform: none;
+    letter-spacing: 0;
+    text-shadow: none;
+}
+
+.feature-card p {
+    font-size: 0.82rem;
+    color: #222222;
+    line-height: 1.5;
+}
+
+/* =============================================
+   NAVIGATION MODULE
+   ============================================= */
+.controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    padding: 0 6px 0 16px;
+    gap: 8px;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47, 164, 164, 0.18);
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.875rem;
+    padding: 10px 0;
+    flex: 1;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-icon-btn,
+#searchBtn {
+    background: var(--primary);
+    border: none;
+    border-radius: 22px;
+    padding: 6px 14px;
+    cursor: pointer;
+    color: #FFFFFF;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: inherit;
+    transition: background var(--transition);
+}
+
+.search-icon-btn:hover,
+#searchBtn:hover {
+    background: var(--primary-dark);
+}
+
+/* Autocomplete suggestions */
+.suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    list-style: none;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 500;
+    box-shadow: var(--shadow-md);
+    display: none;
+}
+
+.suggestions-dropdown.open {
+    display: block;
+}
+
+.suggestions-dropdown li {
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+}
+
+.suggestions-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.suggestions-dropdown li:hover,
+.suggestions-dropdown li.active-suggestion {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.suggestion-floor {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.floor-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.floor-selector label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+#floorSelect {
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 30px;
+    background: #1F6F6D;
+    font-size: 0.85rem;
+    font-family: inherit;
+    color: #FFFFFF;
+    outline: none;
+    cursor: pointer;
+    transition: border-color var(--transition);
+}
+
+#floorSelect:focus,
+#floorSelect:hover {
+    border-color: rgba(46, 139, 139, 0.80);
+}
+
+/* Blueprint */
+.blueprint-container {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 480px;
+    overflow: auto;
+}
+
+.blueprint {
+    width: 100%;
+    height: auto;
+    display: none;
+    max-width: 900px;
+}
+
+.blueprint.active {
+    display: block;
+}
+
+/* SVG Rooms */
+.room {
+    fill: #f8fafc;
+    stroke: #cbd5e1;
+    stroke-width: 1.5;
+    transition: fill 0.2s, stroke 0.2s;
+}
+
+.room-group {
+    cursor: pointer;
+}
+
+.room-group:hover .room {
+    fill: #eff6ff !important;
+    stroke: var(--primary) !important;
+}
+
+.room-label {
+    font-weight: 500;
+    font-size: 13px;
+    fill: #334155;
+    pointer-events: none;
+}
+
+.room-group:hover .room-label {
+    fill: var(--primary);
+}
+
+.room-group.highlight .room {
+    fill: rgba(34, 197, 94, 0.15) !important;
+    stroke: var(--accent) !important;
+    stroke-width: 2.5 !important;
+}
+
+.room-group.highlight .room-label {
+    fill: #15803d !important;
+    font-weight: 700 !important;
+}
+
+/* Room type fills */
+.class-room {
+    fill: #ffffff;
+}
+
+.lab {
+    fill: #f0f9ff;
+}
+
+.stair {
+    fill: #f8fafc;
+    stroke-dasharray: 4, 4;
+}
+
+.hall {
+    fill: #fffbeb;
+}
+
+.entrance {
+    fill: #f0fdf4;
+    stroke: var(--accent);
+}
+
+.courtyard {
+    fill: #f1f5f9 !important;
+    stroke: #e2e8f0 !important;
+}
+
+/* =============================================
+   FACULTY MODULE
+   ============================================= */
+.faculty-section {
+    margin-bottom: 24px;
+}
+
+.faculty-grid,
+.principal-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+}
+
+.faculty-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.faculty-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--accent);
+}
+
+.faculty-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    margin-bottom: 10px;
+}
+
+.faculty-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+}
+
+.faculty-designation {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.faculty-office {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.faculty-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.status-active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.status-on-leave {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.locate-btn {
+    width: 100%;
+    padding: 9px;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 3px 12px rgba(31, 111, 109, 0.25);
+}
+
+.locate-btn:hover {
+    background: var(--primary);
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(31, 111, 109, 0.35);
+}
+
+/* =============================================
+   LIBRARY MODULE
+   ============================================= */
+.library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+}
+
+.library-header h2 {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.search-bar {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px 18px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    color: #FFFFFF;
+    background: transparent;
+    min-width: 0;
+}
+
+.search-bar::placeholder {
+    color: #B0C4DE;
+}
+
+/* Inputs and selects inside modules */
+.module input,
+.module select,
+.module textarea {
+    background: #FFFFFF;
+    border: 1.5px solid var(--border);
+    border-radius: 30px;
+    color: var(--text);
+    padding: 8px 16px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.module input::placeholder,
+.module textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.module input:focus,
+.module select:focus,
+.module textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47, 164, 164, 0.18);
+}
+
+
+.library-summary {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.summary-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+
+.summary-icon {
+    font-size: 1.4rem;
+}
+
+.summary-info h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0 0 2px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.summary-info p {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.my-books-section {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.book-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.book-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.book-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.book-author {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.issue-btn,
+.reserve-btn,
+.return-btn,
+.unavailable-btn {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background var(--transition);
+}
+
+.issue-btn {
+    background: var(--primary);
+    color: #fff;
+}
+
+.issue-btn:hover {
+    background: var(--primary-dark);
+}
+
+.reserve-btn {
+    background: #FFFFFF;
+    color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+.reserve-btn:hover {
+    background: #f0f0f0;
+    transform: scale(1.03);
+}
+
+.return-btn {
+    background: #FFFFFF;
+    color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+.unavailable-btn {
+    background: rgba(255, 255, 255, 0.10);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.available {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.unavailable {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.reserved {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.copy-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.fine-badge {
+    font-size: 0.75rem;
+    color: #b91c1c;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* =============================================
+   CANTEEN MODULE
+   ============================================= */
+.canteen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+}
+
+.canteen-header h2 {
+    margin: 0;
+    border-bottom: none;
+    padding: 0;
+}
+
+.cart-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background var(--transition);
+}
+
+.cart-btn:hover {
+    background: var(--primary);
+}
+
+.badge {
+    background: #fff;
+    color: var(--primary);
+    border-radius: 20px;
+    padding: 0 7px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.canteen-layout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+    align-items: start;
+}
+
+.food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px;
+}
+
+.food-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+    align-items: flex-start;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+    overflow: hidden;
+}
+
+.food-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.food-card.unavailable-card {
+    opacity: 0.72;
+    filter: grayscale(40%);
+}
+
+.food-img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    display: block;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.food-img-fallback {
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    background: rgba(0, 128, 128, 0.07);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.food-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Admin-only elements: hidden by default; JS shows them for admin role */
+.admin-only {
+    display: none !important;
+}
+
+.food-info h3 {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.food-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.add-btn {
+    padding: 6px 10px;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 4px;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 3px 10px rgba(31, 111, 109, 0.25);
+}
+
+.add-btn:hover {
+    background: var(--primary);
+    transform: scale(1.05);
+    box-shadow: 0 5px 16px rgba(31, 111, 109, 0.35);
+}
+
+.add-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.cart-sidebar {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+}
+
+.cart-sidebar h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text);
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(11, 31, 58, 0.10);
+    font-size: 0.82rem;
+}
+
+.item-details h4 {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.item-price {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+}
+
+.qty-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-footer {
+    margin-top: 12px;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text);
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 9px;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.checkout-btn:hover {
+    background: var(--primary);
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(31, 111, 109, 0.30);
+}
+
+.empty-cart-msg {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    padding: 20px 0;
+}
+
+.admin-panel {
+    margin-top: 20px;
+}
+
+.accordion-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 9px 14px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+    transition: background var(--transition);
+}
+
+.accordion-btn:hover {
+    background: var(--border);
+}
+
+.panel-content {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.panel-content input,
+.panel-content select {
+    flex: 1;
+    min-width: 120px;
+    padding: 7px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.panel-content button {
+    padding: 7px 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* =============================================
+   BUS MODULE
+   ============================================= */
+.bus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.bus-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.bus-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    border-color: var(--accent);
+}
+
+.bus-card.unavailable {
+    border-color: rgba(252, 165, 165, 0.40);
+    background: rgba(127, 29, 29, 0.20);
+}
+
+.bus-number {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.bus-route {
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.bus-alert-box {
+    font-size: 0.78rem;
+    color: #92400E;
+    background: #FEF3C7;
+    padding: 6px 8px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.urgent-banner {
+    background: #FEF2F2;
+    border: 1px solid #FCA5A5;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    color: #DC2626;
+    margin-bottom: 16px;
+}
+
+/* =============================================
+   RESPONSIVE — Mobile & Tablet
+   ============================================= */
+@media (max-width: 1024px) {
+    .canteen-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --sidebar-w: 0px;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        flex-direction: row;
+        align-items: center;
+        padding: 0;
+    }
+
+    .sidebar-header {
+        padding: 10px 14px;
+        border: none;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        padding: 8px;
+        overflow-x: auto;
+    }
+
+    .nav-links li {
+        margin: 0;
+    }
+
+    .nav-links a {
+        padding: 7px 12px;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    .app-container {
+        flex-direction: column;
+    }
+
+    .main-content {
+        margin-left: 0;
+        height: calc(100vh - 56px);
+    }
+
+    .hero-overlay h2 {
+        font-size: 1.3rem;
+    }
+
+    .hero-section,
+    .hero-overlay {
+        min-height: 35vw;
+    }
+
+    .home-features {
+        gap: 10px;
+    }
+
+    .faculty-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+
+    .scroll-area {
+        padding: 16px;
+    }
+}
+
+/* =============================================
+   EXAM SEAT MODULE
+   ============================================= */
+.exam-seat-search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.exam-reg-input {
+    flex: 1;
+    min-width: 220px;
+    max-width: 400px;
+    font-size: 0.9rem !important;
+    padding: 10px 14px !important;
+    letter-spacing: 0.03em;
+}
+
+.exam-search-btn {
+    padding: 10px 24px;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.exam-search-btn:hover {
+    background: var(--primary);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(31, 111, 109, 0.30);
+}
+
+.exam-search-btn:active {
+    transform: translateY(0);
+}
+
+.seat-msg {
+    font-size: 0.88rem;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 0;
+}
+
+.seat-warn {
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    color: #92400E;
+}
+
+.seat-result-card {
+    border-radius: 10px;
+    padding: 20px 24px;
+    max-width: 420px;
+    border: 1px solid var(--border);
+    background: #FFFFFF;
+    box-shadow: var(--shadow-md);
+    animation: fadeUp 0.2s ease;
+}
+
+.seat-result-card.seat-found {
+    border-color: rgba(31, 111, 109, 0.35);
+    background: rgba(31, 111, 109, 0.05);
+}
+
+.seat-result-card.seat-not-found {
+    border-color: #FCA5A5;
+    background: #FFF5F5;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 0.88rem;
+    color: #DC2626;
+}
+
+.seat-result-card.seat-not-found p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.seat-result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.seat-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.seat-result-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.seat-result-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.seat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(31, 111, 109, 0.06);
+    border-radius: 8px;
+    border: 1px solid rgba(31, 111, 109, 0.15);
+}
+
+.seat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.seat-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: right;
+}
+
+.seat-highlight {
+    color: var(--primary);
+    background: rgba(31, 111, 109, 0.12);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+}
+
+/* =============================================
+   SHARED UTILITY CLASSES — Navy Blue Design System
+   Reused by ALL modules (Student + Admin) to keep
+   visual language consistent with the Navigation module.
+   ============================================= */
+
+/* ── Module Header Row ──────────────────────
+   Flex row with space-between for title + action widget
+   (search bar, button, etc.)
+   Usage: <div class="module-header"> <h2>…</h2> <div class="search-box">…</div> </div>
+   ─────────────────────────────────────────── */
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+}
+
+/* When h2 sits inside .module-header it should not duplicate the border */
+.module-header h2 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Section Card ───────────────────────────
+   Inner content card for sub-sections within a module.
+   Matches the card style used by Navigation module's child panels.
+   ─────────────────────────────────────────── */
+.section-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.section-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+
+/* Section card sub-title (replaces generic h3 inside cards) */
+.section-card-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 16px;
+}
+
+/* ── Page Sub-Heading ───────────────────────
+   Used where .module h3 lives but needs stronger visual identity
+   ─────────────────────────────────────────── */
+.page-section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 20px 0 12px;
+}
+
+/* ── Accent Divider ─────────────────────────
+   Thin blue horizontal rule to separate major sections
+   ─────────────────────────────────────────── */
+.module-divider {
+    border: none;
+    border-top: 1px solid rgba(31, 111, 109, 0.18);
+    margin: 24px 0;
+}
+
+/* ── Admin Manage-Section — enhanced hover ──
+   Adds a soft hover effect to all admin section cards so
+   they react like the Navigation module's elements.
+   ─────────────────────────────────────────── */
+.manage-section {
+    transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.manage-section:hover {
+    border-color: rgba(46, 139, 139, 0.30) !important;
+    box-shadow: 0 12px 35px rgba(31, 111, 109, 0.20) !important;
+}
+
+/* ── Admin Manage-Header — blue accent underline ──
+   The manage-header h2 used in admin panels now matches
+   the blue underline of .module h2 in the student app.
+   Uses !important so it wins over the scoped <style> in admin.html.
+   ─────────────────────────────────────────── */
+.manage-header {
+    border-bottom-color: rgba(31, 111, 109, 0.20) !important;
+}
+
+.manage-header h2 {
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    color: var(--primary) !important;
+    letter-spacing: 0.04em !important;
+}
+
+/* ── Bus Module — consistent header row ─────
+   The bus module has a plain h2 but no header wrapper.
+   .bus-header provides the same layout as .library-header.
+   ─────────────────────────────────────────── */
+.bus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+}
+
+.bus-header h2 {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Stat Card — consistent hover (Library summary & admin overview) ── */
+.summary-card,
+.stat-card {
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.stat-card:hover {
+    border-color: var(--accent) !important;
+    box-shadow: var(--shadow-md) !important;
+    transform: translateY(-2px);
+}
+
+/* ── .my-books-section — section-card treatment ─── */
+.my-books-section {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 20px;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.my-books-section:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+
+/* ── Canteen menu-section heading ─── */
+.menu-section>h3 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+}
+
+/* ── Exam Seat module header row (wraps the h2) ─── */
+.exam-seat-module-header {
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(31, 111, 109, 0.20);
+}
+
+.exam-seat-module-header h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.04em;
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =============================================
+   TEAL MOBILE-APP THEME — Student Modules
+   Applied via .teal-theme class on each <section>.
+   Scoped so Home, Navigation, Login are untouched.
+   ============================================= */
+
+/* Section background — teal-theme is kept for backward compat but padding removed
+   since the global theme now handles background. */
+.teal-theme {
+    --tm-primary: #1F6F6D;
+    --tm-secondary: #185E5C;
+    --tm-accent: #2E8B8B;
+    --tm-bg: #F5F7F7;
+    --tm-card: #FFFFFF;
+    --tm-text: #1A1A1A;
+    --tm-muted: #5F6F73;
+    --tm-border: #E4E7EB;
+    --tm-shadow: 0 4px 16px rgba(31, 111, 109, 0.10);
+    --tm-shadow-lg: 0 8px 28px rgba(31, 111, 109, 0.16);
+    --tm-radius: 10px;
+    --tm-radius-sm: 8px;
+    --tm-transition: 0.2s ease;
+}
+
+/* ── Module heading h2 ── */
+.teal-theme h2,
+.teal-theme .module-header h2,
+.teal-theme .library-header h2,
+.teal-theme .bus-header h2,
+.teal-theme .exam-seat-module-header h2 {
+    color: var(--tm-primary) !important;
+    border-bottom-color: rgba(31, 111, 109, 0.25) !important;
+}
+
+/* Module header row border */
+.teal-theme .library-header,
+.teal-theme .canteen-header,
+.teal-theme .bus-header,
+.teal-theme .exam-seat-module-header,
+.teal-theme .module-header {
+    border-bottom-color: rgba(31, 111, 109, 0.25) !important;
+}
+
+/* Section sub-headings h3 */
+.teal-theme h3,
+.teal-theme .page-section-title,
+.teal-theme .section-card-title,
+.teal-theme .menu-section>h3 {
+    color: var(--tm-muted) !important;
+}
+
+/* ── Search Box ── */
+.teal-theme .search-box {
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--tm-border) !important;
+    border-radius: 30px !important;
+}
+
+.teal-theme .search-box:focus-within {
+    border-color: var(--tm-accent) !important;
+    box-shadow: 0 0 0 3px rgba(46, 139, 139, 0.18) !important;
+}
+
+.teal-theme .search-box input,
+.teal-theme .search-bar {
+    color: var(--tm-text) !important;
+    background: transparent !important;
+}
+
+.teal-theme .search-box input::placeholder,
+.teal-theme .search-bar::placeholder {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .search-icon-btn,
+.teal-theme #searchBtn {
+    background: var(--tm-accent) !important;
+    color: #fff !important;
+}
+
+.teal-theme .search-icon-btn:hover,
+.teal-theme #searchBtn:hover {
+    background: var(--tm-primary) !important;
+}
+
+/* ── Standalone search bar ── */
+.teal-theme input.search-bar-standalone {
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--tm-border) !important;
+    color: var(--tm-text) !important;
+}
+
+.teal-theme input.search-bar-standalone::placeholder {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme input.search-bar-standalone:focus {
+    border-color: var(--tm-accent) !important;
+    box-shadow: 0 0 0 3px rgba(46, 139, 139, 0.18) !important;
+}
+
+/* =============================================
+   FACULTY MODULE — Teal
+   ============================================= */
+.teal-theme .faculty-card {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+    transition: box-shadow var(--tm-transition), transform var(--tm-transition), border-color var(--tm-transition) !important;
+}
+
+.teal-theme .faculty-card:hover {
+    box-shadow: var(--tm-shadow-lg) !important;
+    transform: translateY(-3px) !important;
+    border-color: var(--tm-accent) !important;
+}
+
+.teal-theme .faculty-photo {
+    border-color: var(--tm-border) !important;
+}
+
+.teal-theme .faculty-name {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .faculty-designation,
+.teal-theme .faculty-office {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .locate-btn {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    box-shadow: 0 3px 12px rgba(31, 111, 109, 0.25) !important;
+}
+
+.teal-theme .locate-btn:hover {
+    background: var(--tm-primary) !important;
+    transform: scale(1.03) !important;
+    box-shadow: 0 6px 20px rgba(31, 111, 109, 0.35) !important;
+}
+
+/* =============================================
+   LIBRARY MODULE — Teal
+   ============================================= */
+.teal-theme .summary-card {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+    transition: border-color var(--tm-transition), box-shadow var(--tm-transition) !important;
+}
+
+.teal-theme .summary-card:hover {
+    border-color: var(--tm-accent) !important;
+    box-shadow: var(--tm-shadow-lg) !important;
+    background: #FFFFFF !important;
+}
+
+.teal-theme .summary-info h3 {
+    color: var(--tm-primary) !important;
+}
+
+.teal-theme .summary-info p {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .my-books-section {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+}
+
+.teal-theme .my-books-section:hover {
+    border-color: var(--tm-accent) !important;
+    box-shadow: var(--tm-shadow-lg) !important;
+}
+
+.teal-theme .book-card {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+    transition: box-shadow var(--tm-transition), transform var(--tm-transition), border-color var(--tm-transition) !important;
+}
+
+.teal-theme .book-card:hover {
+    box-shadow: var(--tm-shadow-lg) !important;
+    transform: translateY(-2px) !important;
+    border-color: var(--tm-accent) !important;
+}
+
+.teal-theme .book-title {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .book-author {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .issue-btn {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .issue-btn:hover {
+    background: var(--tm-primary) !important;
+}
+
+.teal-theme .reserve-btn,
+.teal-theme .return-btn {
+    background: #FFFFFF !important;
+    color: var(--tm-text) !important;
+    border: 1.5px solid var(--tm-border) !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .reserve-btn:hover,
+.teal-theme .return-btn:hover {
+    background: #F0F9F9 !important;
+    border-color: var(--tm-accent) !important;
+    transform: scale(1.02) !important;
+}
+
+.teal-theme .unavailable-btn {
+    background: #F3F4F6 !important;
+    color: #9CA3AF !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .copy-badge {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .fine-badge {
+    color: #DC2626 !important;
+}
+
+/* =============================================
+   CANTEEN MODULE — Teal
+   ============================================= */
+.teal-theme .food-card {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+    transition: box-shadow var(--tm-transition), transform var(--tm-transition), border-color var(--tm-transition) !important;
+}
+
+.teal-theme .food-card:hover {
+    box-shadow: var(--tm-shadow-lg) !important;
+    transform: translateY(-3px) !important;
+    border-color: var(--tm-accent) !important;
+}
+
+.teal-theme .food-img-fallback {
+    background: #F0F9F9 !important;
+}
+
+.teal-theme .food-info h3 {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .food-price {
+    color: var(--tm-primary) !important;
+}
+
+.teal-theme .add-btn {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    box-shadow: 0 3px 10px rgba(31, 111, 109, 0.25) !important;
+}
+
+.teal-theme .add-btn:hover {
+    background: var(--tm-primary) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 5px 16px rgba(31, 111, 109, 0.35) !important;
+}
+
+.teal-theme .add-btn:disabled {
+    background: #D1D5DB !important;
+    color: #9CA3AF !important;
+    box-shadow: none !important;
+}
+
+.teal-theme .cart-btn {
+    background: var(--tm-accent) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .cart-btn:hover {
+    background: var(--tm-primary) !important;
+}
+
+.teal-theme .cart-sidebar {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+}
+
+.teal-theme .cart-sidebar h3 {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .cart-item {
+    border-bottom-color: var(--tm-border) !important;
+}
+
+.teal-theme .item-details h4 {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .item-price {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .qty-btn {
+    background: #F3F4F6 !important;
+    border-color: var(--tm-border) !important;
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .cart-total {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .checkout-btn {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .checkout-btn:hover {
+    background: var(--tm-primary) !important;
+    transform: scale(1.03) !important;
+    box-shadow: 0 6px 20px rgba(31, 111, 109, 0.30) !important;
+}
+
+.teal-theme .empty-cart-msg {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .badge {
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: #fff !important;
+}
+
+/* Admin panel accordion inside canteen module */
+.teal-theme .accordion-btn {
+    background: var(--tm-card) !important;
+    border: 1.5px solid var(--tm-border) !important;
+    color: var(--tm-text) !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .accordion-btn:hover {
+    background: #F0F9F9 !important;
+    border-color: var(--tm-accent) !important;
+}
+
+.teal-theme .panel-content {
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius-sm) !important;
+}
+
+.teal-theme .panel-content input,
+.teal-theme .panel-content select {
+    background: #FFFFFF !important;
+    border: 1.5px solid var(--tm-border) !important;
+    color: var(--tm-text) !important;
+    border-radius: 30px !important;
+}
+
+.teal-theme .panel-content input::placeholder {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .panel-content input:focus,
+.teal-theme .panel-content select:focus {
+    border-color: var(--tm-accent) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(46, 139, 139, 0.15) !important;
+}
+
+.teal-theme .panel-content button {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+}
+
+/* =============================================
+   BUS MODULE — Teal
+   ============================================= */
+.teal-theme .bus-card {
+    background: var(--tm-card) !important;
+    border: 1px solid var(--tm-border) !important;
+    border-radius: var(--tm-radius) !important;
+    box-shadow: var(--tm-shadow) !important;
+    transition: box-shadow var(--tm-transition), transform var(--tm-transition), border-color var(--tm-transition) !important;
+}
+
+.teal-theme .bus-card:hover {
+    box-shadow: var(--tm-shadow-lg) !important;
+    transform: translateY(-3px) !important;
+    border-color: var(--tm-accent) !important;
+}
+
+.teal-theme .bus-card.unavailable {
+    border-color: #FCA5A5 !important;
+    background: #FFF5F5 !important;
+}
+
+.teal-theme .bus-number {
+    color: var(--tm-primary) !important;
+    font-weight: 700 !important;
+}
+
+.teal-theme .bus-route {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .bus-alert-box {
+    color: #92400E !important;
+    background: #FEF3C7 !important;
+    border-radius: 8px !important;
+}
+
+.teal-theme .urgent-banner {
+    background: #FEF2F2 !important;
+    border: 1px solid #FCA5A5 !important;
+    color: #DC2626 !important;
+    border-radius: 12px !important;
+}
+
+/* =============================================
+   EXAM SEAT MODULE (inside index.html) — Teal
+   ============================================= */
+.teal-theme .exam-reg-input {
+    color: var(--tm-text) !important;
+}
+
+/* Seat result card — found */
+.teal-theme .seat-result-card {
+    background: var(--tm-card) !important;
+    border-color: var(--tm-border) !important;
+    box-shadow: var(--tm-shadow-lg) !important;
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .seat-result-card.seat-found {
+    border-color: rgba(31, 111, 109, 0.35) !important;
+    background: rgba(31, 111, 109, 0.05) !important;
+}
+
+.teal-theme .seat-result-card.seat-not-found {
+    border-color: #FCA5A5 !important;
+    background: #FFF5F5 !important;
+    color: #DC2626 !important;
+}
+
+.teal-theme .seat-result-title {
+    color: var(--tm-primary) !important;
+}
+
+.teal-theme .seat-row {
+    background: rgba(31, 111, 109, 0.05) !important;
+    border-color: rgba(31, 111, 109, 0.15) !important;
+}
+
+.teal-theme .seat-label {
+    color: var(--tm-muted) !important;
+}
+
+.teal-theme .seat-value {
+    color: var(--tm-text) !important;
+}
+
+.teal-theme .seat-highlight {
+    color: var(--tm-primary) !important;
+    background: rgba(31, 111, 109, 0.12) !important;
+}
+
+.teal-theme .seat-warn {
+    background: #FEF3C7 !important;
+    border-color: #FCD34D !important;
+    color: #92400E !important;
+}
+
+.teal-theme .exam-search-btn {
+    background: var(--tm-accent) !important;
+    color: #FFFFFF !important;
+}
+
+.teal-theme .exam-search-btn:hover {
+    background: var(--tm-primary) !important;
+}
+
+/* Status badges (shared across library + canteen) */
+.teal-theme .status-badge.available {
+    background: #DCFCE7 !important;
+    color: #15803D !important;
+}
+
+.teal-theme .status-badge.unavailable {
+    background: #FEE2E2 !important;
+    color: #991B1B !important;
+}
+
+.teal-theme .status-badge.reserved {
+    background: #FEF9C3 !important;
+    color: #854D0E !important;
+}
+
+/* Faculty active/leave status badges */
+.teal-theme .status-active {
+    background: #DCFCE7 !important;
+    color: #15803D !important;
+}
+
+.teal-theme .status-on-leave {
+    background: #FEE2E2 !important;
+    color: #B91C1C !important;
+}

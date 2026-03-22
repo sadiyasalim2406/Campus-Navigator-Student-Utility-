@@ -1,0 +1,312 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Navigator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Campus Nav</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="active" data-page="home">Home</a></li>
+                <li><a href="#" data-page="navigation">Navigation</a></li>
+                <li><a href="#" data-page="faculty">Faculty Info</a></li>
+                <li><a href="#" data-page="library">Library</a></li>
+                <li><a href="#" data-page="canteen">Canteen</a></li>
+                <li><a href="#" data-page="bus">Bus Info</a></li>
+
+                <li><a href="#" data-page="exam-seat">🪑 Exam Seat</a></li>
+                <li><a href="#" class="logout-btn" onclick="Auth.logout()">Logout</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1>Campus Navigator</h1>
+            </header>
+            <div class="scroll-area">
+                <!-- Home Module (Includes Hero & Features) -->
+                <section id="home-module" class="module active">
+                    <!-- HERO SECTION -->
+                    <div class="hero-section">
+                        <div class="hero-overlay">
+                            <h2>Welcome to Smart Campus Utility System</h2>
+                            <p>Navigate Campus • Order Food • Check Library • Bus Info • Faculty Details</p>
+                        </div>
+                    </div>
+
+                    <div class="home-features">
+                        <div class="feature-card">
+                            <div class="feature-icon">🗺️</div>
+                            <h3>Campus Navigation</h3>
+                            <p>Detailed floor plans and interactive maps of all campus buildings.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h3>Library System</h3>
+                            <p>Browse books, check availability, and reserve titles easily.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🍱</div>
+                            <h3>Canteen Ordering</h3>
+                            <p>Skip the queue by ordering food directly from your mobile.</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">👤</div>
+                            <h3>Faculty Directory</h3>
+                            <p>Search and locate faculty members and departmental staff.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Navigation Page Content — shell populated by navigation.js -->
+                <section id="navigation-module" class="module"></section>
+
+                <!-- Faculty/Staff Module -->
+                <section id="faculty-module" class="module teal-theme">
+                    <div class="library-header">
+                        <h2>Faculty &amp; Staff Directory</h2>
+                        <div class="search-box">
+                            <input type="text" id="facultySearch" class="search-bar"
+                                placeholder="Search by name or room...">
+                            <button class="search-icon-btn" aria-label="Search">🔍</button>
+                        </div>
+                    </div>
+                    <div class="faculty-section">
+                        <h3>Principal</h3>
+                        <div id="principal-container" class="principal-container"></div>
+                    </div>
+
+                    <div class="faculty-section">
+                        <h3>Faculty Members</h3>
+                        <div id="faculty-grid" class="faculty-grid"></div>
+                    </div>
+
+                    <div class="faculty-section">
+                        <h3>Technical Staff</h3>
+                        <div id="staff-grid" class="faculty-grid"></div>
+                    </div>
+                </section>
+
+                <!-- Library Module -->
+                <section id="library-module" class="module teal-theme">
+                    <div class="library-header">
+                        <h2>Library &amp; Reservation System</h2>
+                        <div class="search-box">
+                            <input type="text" id="library-search" class="search-bar" placeholder="🔍 Search Books..."
+                                onkeyup="filterBooks()">
+                            <button class="search-icon-btn" aria-label="Search">🔍</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Summary -->
+                    <div class="library-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon">📚</div>
+                            <div class="summary-info">
+                                <h3 id="stat-total-books">0</h3>
+                                <p>Total Books</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">✅</div>
+                            <div class="summary-info">
+                                <h3 id="stat-available-books">0</h3>
+                                <p>Available</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">📖</div>
+                            <div class="summary-info">
+                                <h3 id="stat-issued-books">0</h3>
+                                <p>Issued</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon">📖</div>
+                            <div class="summary-info">
+                                <h3 id="stat-reserved-books">0</h3>
+                                <p>Reserved</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="my-books-container" class="my-books-section" style="display: none;">
+                        <h3>My Issued Books</h3>
+                        <div id="my-books-list" class="book-grid"></div>
+                    </div>
+
+                    <div id="my-reserved-container" class="my-books-section"
+                        style="display: none; border-left-color: #f39c12;">
+                        <h3>My Reservations &amp; Waitlist</h3>
+                        <div id="my-reserved-list" class="book-grid"></div>
+                    </div>
+
+                    <div id="library-content">
+                        <!-- Books Rendered Here -->
+                    </div>
+                </section>
+
+                <!-- Canteen Module -->
+                <section id="canteen-module" class="module teal-theme">
+                    <div class="canteen-header">
+                        <h2>🍱 Campus Canteen</h2>
+                        <button id="toggle-cart-btn" class="cart-btn" onclick="toggleCart()">
+                            🛒 Cart <span id="cart-count" class="badge">0</span>
+                        </button>
+                    </div>
+
+                    <div class="canteen-layout">
+                        <!-- Menu Section -->
+                        <div class="menu-section">
+                            <h3>Menu</h3>
+                            <div id="canteen-menu-grid" class="food-grid">
+                                <!-- Food Items via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Cart Sidebar (Hidden by default on mobile) -->
+                        <aside id="canteen-cart" class="cart-sidebar">
+                            <h3>Your Order</h3>
+                            <div id="cart-items-container">
+                                <p class="empty-cart-msg">Your cart is empty.</p>
+                            </div>
+
+                            <div class="cart-footer">
+                                <div class="cart-total">
+                                    <span>Total:</span>
+                                    <span id="cart-total-price">₹0</span>
+                                </div>
+                                <button id="place-order-btn" class="checkout-btn" onclick="placeOrder()">Place
+                                    Order</button>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <!-- Admin Section (Collapsible) -->
+                    <div class="admin-panel admin-only">
+                        <button class="accordion-btn" onclick="toggleAdminPanel()">⚙️ Admin: Manage Menu</button>
+                        <div id="admin-panel-content" class="panel-content" style="display:none;">
+                            <input type="text" id="new-food-name" placeholder="Item Name">
+                            <input type="number" id="new-food-price" placeholder="Price (₹)">
+                            <select id="new-food-category">
+                                <option value="Snacks">Snacks</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Beverages">Beverages</option>
+                            </select>
+                            <button onclick="addNewFoodItem()">Add Item</button>
+                        </div>
+                    </div>
+
+                    <!-- Admin Orders Section -->
+                    <div class="admin-panel admin-only" style="margin-top:12px;">
+                        <button class="accordion-btn" onclick="toggleOrdersPanel()">📋 Admin: Manage Orders</button>
+                        <div id="admin-orders-panel" style="display:none; margin-top:12px;">
+                            <div id="admin-orders-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bus Module -->
+                <section id="bus-module" class="module teal-theme">
+                    <div class="bus-header">
+                        <h2>🚌 Bus Information</h2>
+                    </div>
+                    <div id="bus-alert-container"></div>
+                    <div id="bus-grid" class="bus-grid">
+                        <!-- Bus Cards Rendered Here -->
+                    </div>
+                </section>
+
+                <!-- Exam Seat Module (Student Read-Only) -->
+                <section id="exam-seat-module" class="module teal-theme">
+                    <div class="exam-seat-module-header">
+                        <h2>🪑 My Exam Seat</h2>
+                    </div>
+                    <div class="exam-seat-search-box">
+                        <div class="search-box" style="max-width:460px;">
+                            <input type="text" id="examRegInput" class="search-bar exam-reg-input"
+                                placeholder="Enter Register Number (e.g. MEK25CS001)" autocomplete="off"
+                                onkeydown="if(event.key==='Enter') searchExamSeat()">
+                            <button id="examSearchBtn" class="search-icon-btn" onclick="searchExamSeat()"
+                                aria-label="Search">🔍</button>
+                        </div>
+                    </div>
+                    <div id="examSeatResult"></div>
+                </section>
+
+
+            </div><!-- /.scroll-area -->
+        </main>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="bus_manager.js"></script>
+    <script src="library_manager.js"></script>
+    <script src="canteen_manager.js"></script>
+    <script src="script.js"></script>
+    <script src="navigation.js?v=20260304"></script>
+    <script>
+        Auth.initProtection();
+
+        /* ── EXAM SEAT SEARCH (Student, read-only) ── */
+        function searchExamSeat() {
+            const reg = document.getElementById('examRegInput').value.trim().toUpperCase();
+            const resultEl = document.getElementById('examSeatResult');
+            if (!reg) {
+                resultEl.innerHTML = '<p class="seat-msg seat-warn">Please enter a register number.</p>';
+                return;
+            }
+            const seating = JSON.parse(localStorage.getItem('campus_exam_seating') || 'null');
+            if (!seating) {
+                resultEl.innerHTML = '<p class="seat-msg seat-warn">Exam seating has not been published yet. Please check back later.</p>';
+                return;
+            }
+            const entry = seating[reg];
+            if (!entry) {
+                resultEl.innerHTML = `<div class="seat-result-card seat-not-found"><span class="seat-icon">❌</span><p>No record found for <b>${reg}</b>.<br>Verify your register number or contact the exam cell.</p></div>`;
+                return;
+            }
+            const seatInfo = entry.isDrawing
+                ? `Table ${entry.tableNo} &nbsp;&ndash;&nbsp; Row ${entry.row}, Column ${entry.col}`
+                : `Bench ${entry.benchNo}`;
+            const seatIcon = entry.isDrawing ? '🎨' : '🪑';
+            resultEl.innerHTML = `
+                <div class="seat-result-card seat-found">
+                    <div class="seat-result-header">
+                        <span class="seat-icon">✅</span>
+                        <span class="seat-result-title">Seat Found</span>
+                    </div>
+                    <div class="seat-result-body">
+                        <div class="seat-row">
+                            <span class="seat-label">🏢 Floor</span>
+                            <span class="seat-value">${entry.floor}</span>
+                        </div>
+                        <div class="seat-row">
+                            <span class="seat-label">🏫 Classroom</span>
+                            <span class="seat-value">${entry.roomName}</span>
+                        </div>
+                        <div class="seat-row">
+                            <span class="seat-label">${seatIcon} Seat</span>
+                            <span class="seat-value seat-highlight">${seatInfo}</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+    </script>
+</body>
+
+</html>
