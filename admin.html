@@ -917,23 +917,7 @@
             <!-- Library Management -->
             <section id="library-tab" class="admin-tab" style="display:none;">
                 <div class="manage-section">
-                    <div class="manage-header">
-                        <h2>Library Books</h2>
-                        <button class="action-btn" onclick="addItem('library')">+ Add Book</button>
-                    </div>
-                    <table class="data-table" id="libraryTable">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Availability</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
+                    <!-- renderLibraryAdmin() will populate this -->
                 </div>
             </section>
 
@@ -972,15 +956,14 @@
                 </div>
             </section>
 
-            <!-- ═══════════ EXAM SEATING — ADMIN TAB (launcher) ═══════════ -->
+            <!-- Exam Seating -->
             <section id="seating-tab" class="admin-tab" style="display:none;">
                 <div class="manage-section" style="text-align:center; padding:60px 30px;">
-                    <div style="font-size:3rem; margin-bottom:16px;">📋</div>
+                    <div style="font-size:3rem; margin-bottom:16px;">&#128203;</div>
                     <h2 style="font-size:1.4rem; color:#FFFFFF; margin-bottom:10px;">CSE Exam Seating Arrangement</h2>
-                    <p
-                        style="color:#B0C4DE; font-size:0.92rem; margin-bottom:28px; max-width:480px; margin-inline:auto; line-height:1.6;">
+                    <p style="color:#B0C4DE; font-size:0.92rem; margin-bottom:28px; max-width:480px; margin-inline:auto; line-height:1.6;">
                         Auto-generates seating for <strong style="color:#FFFFFF;">214 students</strong> across all 4
-                        years (MEK22–MEK25) with
+                        years (MEK22&#8211;MEK25) with
                         randomized mixed-year bench assignments, search, and print export.
                     </p>
                     <a href="exam_seating.html" target="_blank" style="display:inline-block; background:#FFFFFF; color:#0B1F3A;
@@ -989,7 +972,7 @@
                               transition:transform 0.2s, box-shadow 0.2s;"
                         onmouseover="this.style.transform='scale(1.04)'; this.style.boxShadow='0 8px 28px rgba(0,0,0,0.40)'"
                         onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 20px rgba(0,0,0,0.25)'">
-                        ⚡ Open Exam Seating System
+                        &#9889; Open Exam Seating System
                     </a>
                     <div style="margin-top:16px; font-size:0.78rem; color:#B0C4DE;">Opens in a new tab</div>
                 </div>
@@ -1013,7 +996,6 @@
             // Update Sidebar Active State
             const links = document.querySelectorAll('.nav-links a');
             links.forEach(l => l.classList.remove('active'));
-            // Simple heuristic to find link
             Array.from(links).find(l => l.getAttribute('onclick')?.includes(tabId))?.classList.add('active');
 
             if (tabId === 'canteen') {
@@ -1022,23 +1004,21 @@
                 renderBusAdmin();
             } else if (tabId === 'library') {
                 renderLibraryAdmin();
+            } else if (tabId === 'orders') {
+                renderOrdersAdmin();
+            } else if (tabId === 'seating') {
+                if (typeof window.esLoadSaved === 'function') window.esLoadSaved();
             }
         }
 
-        // Mock Data / LocalStorage Loading
+        // Stats Loading
         function loadStats() {
             const users = JSON.parse(localStorage.getItem(Auth.USERS_KEY)) || [];
             document.getElementById('userCount').textContent = users.length;
 
-            // Bus Count
-            const buses = BusManager.getRoutes() || [];
-            // document.getElementById('busCount').innerText = buses.length; // If there was a busCount element
-
-            // Library Count
             const books = LibraryManager.getBooks() || [];
             document.getElementById('bookCount').innerText = books.length;
 
-            // Canteen Count
             const canteenItems = JSON.parse(localStorage.getItem('campus_canteen_menu')) || [];
             document.getElementById('canteenCount').innerText = canteenItems.length;
         }
@@ -1047,7 +1027,7 @@
             if (type === 'canteen') {
                 openCanteenModal();
             } else if (type === 'library') {
-                openBookModal(); // Library uses existing mock function if available or I should have checked
+                openBookModal();
             } else if (type === 'bus') {
                 alert(`Add ${type} feature coming soon!`);
             }
@@ -1066,17 +1046,17 @@
                 const toggleStyle = inStock
                     ? 'background:rgba(231,76,60,0.20); color:#fca5a5; border:1px solid rgba(231,76,60,0.35);'
                     : 'background:rgba(39,174,96,0.20); color:#86efac; border:1px solid rgba(39,174,96,0.35);';
-                const toggleLabel = inStock ? '✖ Mark Out of Stock' : '✔ Mark Available';
+                const toggleLabel = inStock ? '&#10006; Mark Out of Stock' : '&#10004; Mark Available';
 
                 return `
                 <tr>
                     <td>${item.name}</td>
-                    <td>₹${item.price}</td>
+                    <td>&#x20b9;${item.price}</td>
                     <td>
                         <span style="padding: 4px 10px; border-radius: 20px; font-size:0.78rem; font-weight:600;
                             background: ${inStock ? 'rgba(39,174,96,0.18)' : 'rgba(231,76,60,0.18)'};
                             color: ${inStock ? '#86efac' : '#fca5a5'}; border: 1px solid ${inStock ? 'rgba(39,174,96,0.35)' : 'rgba(231,76,60,0.35)'}">
-                            ${inStock ? '✔ Available' : '✖ Out of Stock'}
+                            ${inStock ? '&#10004; Available' : '&#10006; Out of Stock'}
                         </span>
                     </td>
                     <td style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -1112,19 +1092,19 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2>Add Canteen Item</h2>
-                            <button class="close-modal" onclick="closeCanteenModal()">&times;</button>
+                            <button class="close-modal" onclick="closeCanteenModal()">&#215;</button>
                         </div>
                         <div class="form-group">
                             <label>Item Name</label>
                             <input type="text" id="canteen-name" placeholder="Enter item name">
                         </div>
                         <div class="form-group">
-                            <label>Price (₹)</label>
+                            <label>Price (&#x20b9;)</label>
                             <input type="number" id="canteen-price" placeholder="Enter price">
                         </div>
                         <div class="form-group">
                             <label>Category</label>
-                        <select id="canteen-category"
+                            <select id="canteen-category"
                                 style="width:100%; padding:10px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:30px; background:#1E3A6D; color:#FFFFFF; font-size:0.88rem; font-family:inherit; outline:none; margin-top:4px; box-sizing:border-box;">
                                 <option value="Snacks">Snacks</option>
                                 <option value="Lunch">Lunch</option>
@@ -1134,7 +1114,7 @@
                         </div>
                         <div class="form-group">
                             <label>Status</label>
-                        <select id="canteen-status"
+                            <select id="canteen-status"
                                 style="width:100%; padding:10px 14px; border:1px solid rgba(255,255,255,0.15); border-radius:30px; background:#1E3A6D; color:#FFFFFF; font-size:0.88rem; font-family:inherit; outline:none; margin-top:4px; box-sizing:border-box;">
                                 <option value="true">Available</option>
                                 <option value="false">Out of Stock</option>
@@ -1148,7 +1128,7 @@
                             <div id="canteen-img-preview" style="margin-top:10px; display:none; text-align:center;">
                                 <img id="canteen-preview-img" src="" alt="Preview"
                                     style="max-width:100%; max-height:140px; border-radius:8px; border:2px solid #4A9FFF; object-fit:cover;">
-                                <div style="font-size:0.75rem; color:#90cdf4; margin-top:4px;">✔ Image ready</div>
+                                <div style="font-size:0.75rem; color:#90cdf4; margin-top:4px;">&#10004; Image ready</div>
                             </div>
                         </div>
                         <button class="action-btn" style="width:100%; padding:12px; font-size:1rem;" onclick="saveCanteenItem()">Save Item</button>
@@ -1157,7 +1137,6 @@
                 document.body.insertAdjacentHTML('beforeend', modalHtml);
                 modal = document.getElementById('canteenModal');
             } else {
-                // Reset image fields for re-use
                 const imgInput = document.getElementById('canteen-image');
                 if (imgInput) imgInput.value = '';
                 const preview = document.getElementById('canteen-img-preview');
@@ -1175,7 +1154,7 @@
             if (!file) { _canteenImgBase64 = ''; return; }
             const reader = new FileReader();
             reader.onload = function (e) {
-                _canteenImgBase64 = e.target.result;  // full Base64 data-URL
+                _canteenImgBase64 = e.target.result;
                 const previewWrap = document.getElementById('canteen-img-preview');
                 const previewImg = document.getElementById('canteen-preview-img');
                 if (previewImg) previewImg.src = _canteenImgBase64;
@@ -1201,7 +1180,6 @@
             }
 
             const items = JSON.parse(localStorage.getItem('campus_canteen_menu')) || [];
-
             const newItem = {
                 id: Date.now(),
                 name: name,
@@ -1209,13 +1187,12 @@
                 stock: isAvailable ? 50 : 0,
                 available: isAvailable,
                 category: category,
-                image: _canteenImgBase64   // Base64 data-URL or '' if no image chosen
+                image: _canteenImgBase64
             };
 
             items.push(newItem);
             localStorage.setItem('campus_canteen_menu', JSON.stringify(items));
-
-            _canteenImgBase64 = '';        // clear after save
+            _canteenImgBase64 = '';
             closeCanteenModal();
             renderCanteenAdmin();
             loadStats();
@@ -1233,10 +1210,8 @@
 
         // --- Bus Management Logic ---
         function renderBusAdmin() {
-            // We need a container for the cards, let's reuse/replace the table container
             const manageSection = document.querySelector('#bus-tab .manage-section');
 
-            // Clear existing table and ensure grid container exists
             if (!document.getElementById('admin-bus-grid')) {
                 manageSection.innerHTML = `
                     <div class="manage-header">
@@ -1255,7 +1230,6 @@
                 <div class="bus-card ${!isAvailable ? 'unavailable' : ''}">
                     <div class="bus-number">Bus ${bus.number}</div>
                     <div class="bus-route">${bus.name}</div>
-                    
                     <div class="admin-controls">
                         <div class="control-row">
                             <span style="font-weight:600; color:#B0C4DE;">Status:</span>
@@ -1264,13 +1238,12 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                        
                         <div class="control-row" style="flex-direction:column; align-items:flex-start;">
                             <span style="font-weight:600; color:#B0C4DE; margin-bottom:5px;">Alert Message:</span>
-                            <input type="text" 
-                                   class="alert-input" 
-                                   placeholder="e.g. Delayed due to traffic..." 
-                                   value="${bus.alert || ''}" 
+                            <input type="text"
+                                   class="alert-input"
+                                   placeholder="e.g. Delayed due to traffic..."
+                                   value="${bus.alert || ''}"
                                    onchange="updateBusAlert(${bus.id}, this.value)">
                         </div>
                     </div>
@@ -1293,22 +1266,6 @@
             const bus = routes.find(r => r.id === id);
             if (bus) {
                 BusManager.updateRoute(id, bus.status, alertMsg);
-                // No re-render needed for input change generally, but safe to do so or just let it save
-            }
-        };
-
-        // Hook into switchTab to refresh data
-        const originalSwitchAdminTab = switchAdminTab;
-        switchAdminTab = function (tabId) {
-            originalSwitchAdminTab(tabId);
-            if (tabId === 'bus') {
-                renderBusAdmin();
-            } else if (tabId === 'library') {
-                renderLibraryAdmin();
-            } else if (tabId === 'orders') {
-                renderOrdersAdmin();
-            } else if (tabId === 'seating') {
-                if (typeof window.esLoadSaved === 'function') window.esLoadSaved();
             }
         };
 
@@ -1322,7 +1279,6 @@
                 return;
             }
 
-            // Sort newest first
             orders.sort((a, b) => b.id - a.id);
 
             grid.innerHTML = orders.map(order => {
@@ -1332,16 +1288,16 @@
                 const ordStatus = order.orderStatus || order.status || 'Pending';
 
                 const payBadge = payStatus === 'Paid'
-                    ? `<span class="badge badge-paid">💳 Paid</span>`
-                    : `<span class="badge badge-pending-pay">⏳ Payment Pending</span>`;
+                    ? `<span class="badge badge-paid">&#128179; Paid</span>`
+                    : `<span class="badge badge-pending-pay">&#9203; Payment Pending</span>`;
 
                 let ordBadge = '';
                 if (ordStatus === 'Completed') {
-                    ordBadge = `<span class="badge badge-completed">✅ Completed</span>`;
+                    ordBadge = `<span class="badge badge-completed">&#9989; Completed</span>`;
                 } else if (ordStatus === 'Preparing') {
-                    ordBadge = `<span class="badge badge-preparing">🍳 Preparing</span>`;
+                    ordBadge = `<span class="badge badge-preparing">&#127859; Preparing</span>`;
                 } else {
-                    ordBadge = `<span class="badge badge-pending-ord">🕐 Pending</span>`;
+                    ordBadge = `<span class="badge badge-pending-ord">&#128336; Pending</span>`;
                 }
 
                 const payDisabled = payStatus === 'Paid' ? 'disabled' : '';
@@ -1349,10 +1305,10 @@
 
                 return `
                 <div class="order-card" id="order-card-${order.id}">
-                    <div class="order-id">Order #${order.id} &nbsp;·&nbsp; ${date}</div>
-                    <div class="order-student">👤 ${order.studentName}</div>
-                    <div class="order-items">🛒 ${itemSummary}</div>
-                    <div class="order-total">Total: ₹${order.total}</div>
+                    <div class="order-id">Order #${order.id} &nbsp;&middot;&nbsp; ${date}</div>
+                    <div class="order-student">&#128100; ${order.studentName}</div>
+                    <div class="order-items">&#128722; ${itemSummary}</div>
+                    <div class="order-total">Total: &#x20b9;${order.total}</div>
                     <div class="order-badges">
                         <span id="pay-badge-${order.id}">${payBadge}</span>
                         <span id="ord-badge-${order.id}">${ordBadge}</span>
@@ -1373,10 +1329,8 @@
             if (!order) return;
             order.paymentStatus = 'Paid';
             localStorage.setItem('campus_canteen_orders', JSON.stringify(orders));
-
-            // DOM-only update
             const payBadgeEl = document.getElementById(`pay-badge-${orderId}`);
-            if (payBadgeEl) payBadgeEl.innerHTML = `<span class="badge badge-paid">💳 Paid</span>`;
+            if (payBadgeEl) payBadgeEl.innerHTML = `<span class="badge badge-paid">&#128179; Paid</span>`;
             const btn = document.getElementById(`btn-pay-${orderId}`);
             if (btn) btn.disabled = true;
         };
@@ -1386,90 +1340,237 @@
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
             order.orderStatus = 'Completed';
-            order.status = 'Completed'; // keep legacy field in sync
+            order.status = 'Completed';
             localStorage.setItem('campus_canteen_orders', JSON.stringify(orders));
-
-            // DOM-only update
             const ordBadgeEl = document.getElementById(`ord-badge-${orderId}`);
-            if (ordBadgeEl) ordBadgeEl.innerHTML = `<span class="badge badge-completed">✅ Completed</span>`;
+            if (ordBadgeEl) ordBadgeEl.innerHTML = `<span class="badge badge-completed">&#9989; Completed</span>`;
             const btn = document.getElementById(`btn-complete-${orderId}`);
             if (btn) btn.disabled = true;
         };
 
-        // --- Library Admin Logic ---
+        // ================================================================
+        // --- Library Admin Logic (FIXED) ---
+        // ================================================================
         function renderLibraryAdmin() {
             const manageSection = document.querySelector('#library-tab .manage-section');
 
-            // Ensure container structure
-            if (!document.getElementById('admin-library-grid')) {
-                manageSection.innerHTML = `
-                    <div class="manage-header">
-                        <h2>Library Books</h2>
-                        <button class="action-btn" onclick="openBookModal()">+ Add New Book</button>
-                    </div>
-                    
-                    <!-- Modal -->
-                    <div id="bookModal" class="modal">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 id="modalTitle">Add New Book</h2>
-                                <button class="close-modal" onclick="closeBookModal()">&times;</button>
-                            </div>
-                            <div class="form-group">
-                                <label>Book Title</label>
-                                <input type="text" id="book-title" placeholder="Enter book title">
-                            </div>
-                            <div class="form-group">
-                                <label>Author Name</label>
-                                <input type="text" id="book-author" placeholder="Enter author name">
-                            </div>
-                            <div class="form-group">
-                                <label>Category</label>
-                                <select id="book-category" style="width:100%; padding:12px; border:2px solid #ecf0f1; border-radius:8px;">
-                                    <option value="CSE Engineering">CSE Engineering</option>
-                                    <option value="Inspiring & Biography">Inspiring & Biography</option>
-                                    <option value="General">General</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Total Copies</label>
-                                <input type="number" id="book-copies" placeholder="Number of copies">
-                            </div>
-                            <input type="hidden" id="book-id">
-                            <button class="action-btn" style="width:100%; padding:12px; font-size:1rem;" onclick="saveBook()">Save Book</button>
+            // Always rebuild the section so that freshly-added data is shown
+            manageSection.innerHTML = `
+                <div class="manage-header">
+                    <h2>Library Books</h2>
+                    <button class="action-btn" onclick="openBookModal()">+ Add New Book</button>
+                </div>
+
+                <!-- Book Modal -->
+                <div id="bookModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 id="modalTitle">Add New Book</h2>
+                            <button class="close-modal" onclick="closeBookModal()">&#215;</button>
                         </div>
+                        <div class="form-group">
+                            <label>Book Title</label>
+                            <input type="text" id="book-title" placeholder="Enter book title">
+                        </div>
+                        <div class="form-group">
+                            <label>Author Name</label>
+                            <input type="text" id="book-author" placeholder="Enter author name">
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select id="book-category" style="width:100%; padding:12px; border:1.5px solid var(--adm-border); border-radius:8px; outline:none;">
+                                <option value="CSE Engineering">CSE Engineering</option>
+                                <option value="Inspiring &amp; Biography">Inspiring &amp; Biography</option>
+                                <option value="CSE CORE TEXTBOOKS">CSE CORE TEXTBOOKS</option>
+                                <option value="INSPIRATIONAL">INSPIRATIONAL</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Copies</label>
+                            <input type="number" id="book-copies" placeholder="Number of copies" min="1">
+                        </div>
+                        <input type="hidden" id="book-id">
+                        <button class="action-btn" style="width:100%; padding:12px; font-size:1rem;" onclick="saveBook()">Save Book</button>
                     </div>
+                </div>
 
-                    <div id="admin-library-grid" class="bus-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
-                `;
-            }
+                <!-- Books Grid -->
+                <div id="admin-library-grid" class="bus-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-bottom:32px;"></div>
 
+                <!-- ═══ ISSUED BOOKS SECTION ═══ -->
+                <div class="manage-header" style="margin-top:8px;">
+                    <h2>&#128218; Issued Books</h2>
+                    <button class="action-btn" style="font-size:0.82rem; padding:7px 14px;" onclick="renderLibraryAdmin()">&#8635; Refresh</button>
+                </div>
+                <div id="admin-issued-wrap"></div>
+
+                <!-- Student Reservations Section -->
+                <div class="manage-header" style="margin-top:28px;">
+                    <h2>&#128218; Student Book Reservations</h2>
+                </div>
+                <div id="admin-reservations-wrap"></div>
+            `;
+
+            // ── Render books grid ──────────────────────────────────────
             const grid = document.getElementById('admin-library-grid');
             const books = LibraryManager.getBooks();
 
-            grid.innerHTML = books.map(book => `
-                <div class="book-card" style="box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div>
-                        <div class="book-title">${book.title}</div>
-                        <div class="book-author">By ${book.author}</div>
-                        <span class="category-badge">${book.category || 'General'}</span>
-                        <span class="copy-badge">Total Copies: ${book.total || book.copies}</span>
-                         <div style="margin-bottom:15px;">
-                            <span class="status-badge available">${book.copies} Available</span>
+            if (books.length === 0) {
+                grid.innerHTML = '<p style="color:var(--adm-muted); padding:8px 0;">No books in the library yet.</p>';
+            } else {
+                grid.innerHTML = books.map(book => `
+                    <div class="book-card" style="box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+                        <div>
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-author">By ${book.author}</div>
+                            <span class="category-badge">${book.category || 'General'}</span>
+                            <span class="copy-badge">Total: ${book.total || book.copies}</span>
+                            <div style="margin-bottom:15px;">
+                                <span class="status-badge available">${book.copies} Available</span>
+                            </div>
+                        </div>
+                        <div class="order-actions" style="border-top:1px solid rgba(0,0,0,0.08); padding-top:12px; margin-top:10px;">
+                            <button class="btn-pay" onclick="editBook(${book.id})">Edit</button>
+                            <button class="btn-complete" onclick="deleteBook(${book.id})">Delete</button>
                         </div>
                     </div>
-                    
-                    <div class="order-actions" style="border-top:1px solid rgba(255,255,255,0.10); padding-top:12px; margin-top:10px;">
-                        <button class="btn-pay" onclick="editBook(${book.id})">Edit</button>
-                        <button class="btn-complete" onclick="deleteBook(${book.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
+
+            // ── Render issued books table ──────────────────────────────
+            const issuedWrap = document.getElementById('admin-issued-wrap');
+            if (issuedWrap) {
+                // Read using the SAME key as LibraryManager.ISSUED_KEY = 'campus_library_issued'
+                const issuedBooks = JSON.parse(localStorage.getItem('campus_library_issued')) || [];
+
+                if (issuedBooks.length === 0) {
+                    issuedWrap.innerHTML = '<p style="color:var(--adm-muted); padding:8px 0;">No books have been issued yet.</p>';
+                } else {
+                    // Sort newest first
+                    const sortedIssued = [...issuedBooks].sort((a, b) => b.id - a.id);
+
+                    const issuedRows = sortedIssued.map(rec => {
+                        const borrowDate = new Date(rec.borrowDate || rec.timestamp || rec.id).toLocaleString();
+                        const dueDate = new Date(rec.borrowDate || rec.timestamp || rec.id);
+                        dueDate.setDate(dueDate.getDate() + 7);
+                        const now = new Date();
+                        const isOverdue = rec.status === 'Borrowed' && now > dueDate;
+
+                        let statusStyle, statusLabel;
+                        if (rec.status === 'Returned') {
+                            statusStyle = 'background:#F3F4F6; color:#6B7280;';
+                            statusLabel = '&#10003; Returned';
+                        } else if (isOverdue) {
+                            statusStyle = 'background:#FEE2E2; color:#DC2626;';
+                            statusLabel = '&#9888; Overdue';
+                        } else {
+                            statusStyle = 'background:#DCFCE7; color:#15803D;';
+                            statusLabel = '&#128218; Borrowed';
+                        }
+
+                        const name = rec.studentName || rec.userEmail || '—';
+                        const email = rec.userEmail || '—';
+
+                        return `
+                        <tr>
+                            <td><strong>${rec.bookTitle || '—'}</strong></td>
+                            <td>${name}</td>
+                            <td style="font-size:0.82rem; color:var(--adm-muted);">${email}</td>
+                            <td style="font-size:0.82rem;">${borrowDate}</td>
+                            <td><span style="padding:3px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; ${statusStyle}">${statusLabel}</span></td>
+                        </tr>`;
+                    }).join('');
+
+                    issuedWrap.innerHTML = `
+                        <table class="data-table" style="margin-top:8px;">
+                            <thead>
+                                <tr>
+                                    <th>Book Name</th>
+                                    <th>Student Name</th>
+                                    <th>Email</th>
+                                    <th>Issued On</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>${issuedRows}</tbody>
+                        </table>`;
+                }
+            }
+
+            // ── Render reservations table ──────────────────────────────
+            const wrap = document.getElementById('admin-reservations-wrap');
+            if (!wrap) return;
+
+            // Use the SAME localStorage key as LibraryManager.reserveBook()
+            const reservations = JSON.parse(localStorage.getItem('campus_library_reserved')) || [];
+
+            if (reservations.length === 0) {
+                wrap.innerHTML = '<p style="color:var(--adm-muted); padding:8px 0;">No student book reservations found.</p>';
+                return;
+            }
+
+            // Sort newest first
+            const sorted = [...reservations].sort((a, b) => b.id - a.id);
+
+            const rows = sorted.map(res => {
+                const date = new Date(res.reservationDate || res.id).toLocaleString();
+                let statusStyle, statusLabel;
+                if (res.status === 'Active') {
+                    statusStyle = 'background:#DCFCE7; color:#15803D;';
+                    statusLabel = '&#10003; Active';
+                } else if (res.status === 'Cancelled') {
+                    statusStyle = 'background:#FEE2E2; color:#DC2626;';
+                    statusLabel = '&#10007; Cancelled';
+                } else {
+                    statusStyle = 'background:#FEF3C7; color:#92400E;';
+                    statusLabel = res.status;
+                }
+                const canCancel = res.status === 'Active';
+                return `
+                <tr>
+                    <td>${res.bookTitle || '&mdash;'}</td>
+                    <td>${res.userEmail || '&mdash;'}</td>
+                    <td>${date}</td>
+                    <td><span style="padding:3px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; ${statusStyle}">${statusLabel}</span></td>
+                    <td>${canCancel
+                        ? `<button class="action-btn" style="background:rgba(220,38,38,0.12); color:#DC2626; border:1px solid rgba(220,38,38,0.30); padding:5px 12px; font-size:0.8rem;" onclick="adminCancelReservation(${res.id})">Cancel</button>`
+                        : '<span style="color:var(--adm-muted); font-size:0.82rem;">&mdash;</span>'
+                    }</td>
+                </tr>`;
+            }).join('');
+
+            wrap.innerHTML = `
+                <table class="data-table" style="margin-top:8px;">
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Student Email</th>
+                            <th>Reserved On</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
         }
+
+
+        // Admin: cancel a student reservation
+        window.adminCancelReservation = function (resId) {
+            if (!confirm('Cancel this reservation?')) return;
+            const result = LibraryManager.cancelReservation(resId);
+            if (result.success) {
+                renderLibraryAdmin();
+            } else {
+                alert('Could not cancel: ' + (result.message || 'Reservation not found.'));
+            }
+        };
 
         // Modal Functions
         window.openBookModal = function (editMode = false) {
             const modal = document.getElementById('bookModal');
+            if (!modal) return;
             modal.style.display = 'flex';
             if (!editMode) {
                 document.getElementById('modalTitle').innerText = 'Add New Book';
@@ -1482,7 +1583,8 @@
         }
 
         window.closeBookModal = function () {
-            document.getElementById('bookModal').style.display = 'none';
+            const modal = document.getElementById('bookModal');
+            if (modal) modal.style.display = 'none';
         }
 
         window.editBook = function (id) {
@@ -1495,7 +1597,7 @@
                 document.getElementById('book-title').value = book.title;
                 document.getElementById('book-author').value = book.author;
                 document.getElementById('book-category').value = book.category || 'CSE Engineering';
-                document.getElementById('book-copies').value = book.total || book.copies; // Edit Total
+                document.getElementById('book-copies').value = book.total || book.copies;
             }
         }
 
@@ -1512,17 +1614,13 @@
             }
 
             if (id) {
-                // Update
                 LibraryManager.updateBook(id, title, author, category, copies);
             } else {
-                // Add
                 LibraryManager.addBook(title, author, category, copies);
             }
 
             closeBookModal();
             renderLibraryAdmin();
-
-            // If we have a stats update function, call it (re-render handles stats on refresh usually)
             loadStats();
         }
 
@@ -1534,17 +1632,15 @@
             }
         }
 
-        // Close modal if clicked outside
         window.onclick = function (event) {
             const modal = document.getElementById('bookModal');
-            if (event.target == modal) {
+            if (modal && event.target == modal) {
                 closeBookModal();
             }
         }
 
         // Init
         loadStats();
-        // pre-render bus to be ready
         renderBusAdmin();
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -1558,184 +1654,101 @@
 
     </script>
     <script>
-        // ═══════════════════════════════════════════════════════
-        // EXAM SEATING MODULE — Admin Only, Fully Isolated
-        // ═══════════════════════════════════════════════════════
         (function () {
             'use strict';
-
-            // Guard: only run when the admin seating container exists
             if (!document.getElementById('adminSeatingContainer')) return;
 
-            // ── Classroom Configuration ──────────────────────────────────
             const ES_CLASSROOMS = [
-                { id: 'rm104', name: 'Room 104', floor: 'Ground Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm106', name: 'Room 106', floor: 'Ground Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm204', name: 'Room 204', floor: 'First Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm206', name: 'Room 206', floor: 'First Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm401', name: 'Classroom 401', floor: 'Third Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm405', name: 'Classroom 405', floor: 'Third Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm406', name: 'Classroom 406', floor: 'Third Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'rm409', name: 'Classroom 409', floor: 'Third Floor', type: 'regular', rows: 5, cols: 4 },
-                { id: 'dh404', name: 'Drawing Hall 404', floor: 'Third Floor', type: 'drawing', rows: 12, cols: 5 }
+                { id: 'rm104', name: 'Room 104',        floor: 'Ground Floor', type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm106', name: 'Room 106',        floor: 'Ground Floor', type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm204', name: 'Room 204',        floor: 'First Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm206', name: 'Room 206',        floor: 'First Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm401', name: 'Classroom 401',   floor: 'Third Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm405', name: 'Classroom 405',   floor: 'Third Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm406', name: 'Classroom 406',   floor: 'Third Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'rm409', name: 'Classroom 409',   floor: 'Third Floor',  type: 'regular', rows: 5,  cols: 4 },
+                { id: 'dh404', name: 'Drawing Hall 404',floor: 'Third Floor',  type: 'drawing', rows: 12, cols: 5 }
             ];
-            // Seats per bench: regular=2, drawing=1
-            function esSeatsPerBench(room) { return room.type === 'drawing' ? 1 : 2; }
-            function esBenchCount(room) { return room.rows * room.cols; }
-            function esCapacity(room) { return esBenchCount(room) * esSeatsPerBench(room); }
 
-            // ── Year detection from register number ──────────────────────
+            function esSeatsPerBench(r) { return r.type === 'drawing' ? 1 : 2; }
+            function esBenchCount(r)    { return r.rows * r.cols; }
+            function esCapacity(r)      { return esBenchCount(r) * esSeatsPerBench(r); }
+
             function esDetectYear(regNo) {
                 const r = (regNo || '').toUpperCase();
                 if (r.startsWith('MEK25')) return 1;
                 if (r.startsWith('MEK24')) return 2;
                 if (r.startsWith('MEK23')) return 3;
                 if (r.startsWith('MEK22')) return 4;
-                return 0; // unknown
+                return 0;
             }
 
-            // ── Parse textarea input ─────────────────────────────────────
             function esParseUpload(rawText) {
                 const students = [];
-                const lines = rawText.trim().split('\n');
-                lines.forEach(line => {
+                rawText.trim().split('\n').forEach(line => {
                     const parts = line.split(',').map(p => p.trim());
                     if (parts.length < 2) return;
-                    const regNo = parts[0];
-                    const name = parts[1];
+                    const regNo = parts[0], name = parts[1];
                     let year = parts[2] ? parseInt(parts[2], 10) : 0;
                     if (!year || isNaN(year)) year = esDetectYear(regNo);
-                    if (!regNo || !name) return;
-                    students.push({ regNo, name, year });
+                    if (regNo && name) students.push({ regNo, name, year });
                 });
                 return students;
             }
 
-            // ── Seating algorithm ────────────────────────────────────────
-            // Rule: no two students of the same year on the same bench.
-            // Drawing hall benches: 1 seat each. Regular benches: 2 seats.
-            // Strategy:
-            //   1. Sort students (any order — year-interleaved works well)
-            //   2. Fill each bench: left seat first.
-            //   3. For right seat: pick first remaining student of DIFFERENT year.
-            //   4. If no different-year student exists, leave right seat empty.
             function esRunAlgorithm(students) {
-                // Pool of unassigned students; work on a copy
-                let pool = students.map((s, i) => Object.assign({}, s, { _idx: i }));
-
-                // Shuffle by year so we interleave naturally, then sort
-                // Sort pool so years alternate: 1,2,3,4,1,2,3,4...
+                let pool = students.map((s) => Object.assign({}, s));
                 pool.sort((a, b) => a.year - b.year);
-
-                const roomAssignments = {};   // { roomId: [ benchObj, ... ] }
-                // benchObj: { benchNum, left: studentOrNull, right: studentOrNull }
-
-                let roomIdx = 0;
-
-                // Build iterator over benches across all rooms in sequence
+                const roomAssignments = {};
                 for (let ri = 0; ri < ES_CLASSROOMS.length && pool.length > 0; ri++) {
                     const room = ES_CLASSROOMS[ri];
-                    const spb = esSeatsPerBench(room);
-                    const numBenches = esBenchCount(room);
+                    const spb  = esSeatsPerBench(room);
                     const benches = [];
-
-                    for (let b = 1; b <= numBenches && pool.length > 0; b++) {
-                        // Pick left seat: first in pool
-                        const leftIdx = 0;
-                        const left = pool.splice(leftIdx, 1)[0];
-                        let right = null;
-
+                    for (let b = 1; b <= esBenchCount(room) && pool.length > 0; b++) {
+                        const left = pool.splice(0, 1)[0];
+                        let right  = null;
                         if (spb === 2 && pool.length > 0) {
-                            // Find first student with different year
-                            const diffIdx = pool.findIndex(s => s.year !== left.year);
-                            if (diffIdx !== -1) {
-                                right = pool.splice(diffIdx, 1)[0];
-                            } else {
-                                // All remaining are same year — leave bench single
-                                right = null;
-                            }
+                            const di = pool.findIndex(s => s.year !== left.year);
+                            right = di !== -1 ? pool.splice(di, 1)[0] : null;
                         }
-
                         benches.push({ benchNum: b, row: Math.ceil(b / room.cols), col: ((b - 1) % room.cols) + 1, left, right });
                     }
-
-                    if (benches.length > 0) {
-                        roomAssignments[room.id] = benches;
-                    }
+                    if (benches.length > 0) roomAssignments[room.id] = benches;
                 }
-
                 return roomAssignments;
             }
 
-            // ── Render one classroom block ────────────────────────────────
             function esRenderClassroom(room, benches) {
                 const gridClass = room.type === 'drawing' ? 'asm-drawing' : 'asm-regular';
                 const spb = esSeatsPerBench(room);
-
-                let benchHtml = '';
-                const totalBenches = esBenchCount(room);
-
-                for (let b = 1; b <= totalBenches; b++) {
-                    const bench = benches ? benches.find(bx => bx.benchNum === b) : null;
-                    const hasLeft = bench && bench.left;
+                let html = '';
+                for (let b = 1; b <= esBenchCount(room); b++) {
+                    const bench    = benches ? benches.find(bx => bx.benchNum === b) : null;
+                    const hasLeft  = bench && bench.left;
                     const hasRight = bench && bench.right;
-                    const isFull = hasLeft && (spb === 1 || hasRight);
-                    const isEmpty = !hasLeft;
+                    const isFull   = hasLeft && (spb === 1 || hasRight);
+                    let cls = 'asm-bench' + (!hasLeft ? ' empty' : isFull ? ' full' : ' occupied');
 
-                    let cls = 'asm-bench';
-                    if (isEmpty) cls += ' empty';
-                    else if (isFull) cls += ' full';
-                    else cls += ' occupied';
+                    const seat = (s, pos) => s
+                        ? '<div class="asm-seat asm-yr-' + s.year + '"><span class="asm-seat-pos">' + pos + '</span><div><div class="asm-seat-name">' + s.name + '</div><div class="asm-seat-reg">' + s.regNo + '</div><span class="asm-seat-yr">Y' + s.year + '</span></div></div>'
+                        : '<div class="asm-seat asm-seat-empty"><span class="asm-seat-pos">' + pos + '</span><div><div class="asm-seat-name">&mdash;</div></div></div>';
 
-                    const renderSeat = (student, pos) => {
-                        if (!student) {
-                            return `<div class="asm-seat asm-seat-empty">
-                            <span class="asm-seat-pos">${pos}</span>
-                            <div><div class="asm-seat-name">—</div></div>
-                        </div>`;
-                        }
-                        return `<div class="asm-seat asm-yr-${student.year}">
-                        <span class="asm-seat-pos">${pos}</span>
-                        <div>
-                            <div class="asm-seat-name">${student.name}</div>
-                            <div class="asm-seat-reg">${student.regNo}</div>
-                            <span class="asm-seat-yr">Y${student.year}</span>
-                        </div>
-                    </div>`;
-                    };
-
-                    benchHtml += `
-                <div class="${cls}">
-                    <div class="asm-bench-num">Bench ${b} · R${Math.ceil(b / room.cols)} C${((b - 1) % room.cols) + 1}</div>
-                    ${renderSeat(hasLeft ? bench.left : null, 'L')}
-                    ${spb === 2 ? renderSeat(hasRight ? bench.right : null, 'R') : ''}
-                </div>`;
+                    html += '<div class="' + cls + '"><div class="asm-bench-num">Bench ' + b + ' &middot; R' + Math.ceil(b/room.cols) + ' C' + (((b-1)%room.cols)+1) + '</div>' + seat(hasLeft ? bench.left : null, 'L') + (spb === 2 ? seat(hasRight ? bench.right : null, 'R') : '') + '</div>';
                 }
-
-                return `
-            <div class="asm-room-block">
-                <div class="asm-room-title">📍 ${room.name}</div>
-                <div class="asm-room-meta">${room.floor} &nbsp;·&nbsp; ${esBenchCount(room)} benches &nbsp;·&nbsp; Capacity: ${esCapacity(room)} students</div>
-                <div class="asm-grid ${gridClass}">${benchHtml}</div>
-            </div>`;
+                return '<div class="asm-room-block"><div class="asm-room-title">&#128205; ' + room.name + '</div><div class="asm-room-meta">' + room.floor + ' &middot; ' + esBenchCount(room) + ' benches &middot; Capacity: ' + esCapacity(room) + '</div><div class="asm-grid ' + gridClass + '">' + html + '</div></div>';
             }
 
-            // ── Render all present room blocks ────────────────────────────
-            function esRenderAll(assignments) {
+            function esRenderAll() {
                 const output = document.getElementById('esGridOutput');
                 if (!output) return;
-
                 const plan = JSON.parse(localStorage.getItem('examSeatingData') || 'null');
                 if (!plan || !plan.assignments) {
                     output.innerHTML = '<div class="asm-empty-state">Paste student list above and click <strong>Generate Seating</strong> to begin.</div>';
                     document.getElementById('esStats').style.display = 'none';
                     return;
                 }
-
                 const asgn = plan.assignments;
-                let html = '';
-                let totalStudents = 0, roomsUsed = 0, benchesUsed = 0, emptySeats = 0;
-
+                let html = '', totalStudents = 0, roomsUsed = 0, benchesUsed = 0, emptySeats = 0;
                 ES_CLASSROOMS.forEach(room => {
                     const benches = asgn[room.id];
                     if (!benches || benches.length === 0) return;
@@ -1743,34 +1756,29 @@
                     roomsUsed++;
                     benches.forEach(b => {
                         benchesUsed++;
-                        if (b.left) totalStudents++;
+                        if (b.left)  totalStudents++;
                         if (b.right) totalStudents++;
                         if (!b.left) emptySeats++;
                         if (esSeatsPerBench(room) === 2 && !b.right) emptySeats++;
                     });
                 });
-
-                output.innerHTML = html || '<div class="asm-empty-state">No seating data to display.</div>';
-
-                // Stats
-                const statsEl = document.getElementById('esStats');
-                statsEl.style.display = 'flex';
+                output.innerHTML = html || '<div class="asm-empty-state">No seating data.</div>';
+                const se = document.getElementById('esStats');
+                se.style.display = 'flex';
                 document.getElementById('esStatStudents').textContent = totalStudents;
-                document.getElementById('esStatRooms').textContent = roomsUsed;
-                document.getElementById('esStatBenches').textContent = benchesUsed;
-                document.getElementById('esStatEmpty').textContent = emptySeats;
+                document.getElementById('esStatRooms').textContent    = roomsUsed;
+                document.getElementById('esStatBenches').textContent  = benchesUsed;
+                document.getElementById('esStatEmpty').textContent    = emptySeats;
             }
 
-            // ── Public actions ────────────────────────────────────────────
             window.esGenerate = function () {
                 const raw = (document.getElementById('esStudentInput') || {}).value || '';
                 if (!raw.trim()) { alert('Please paste student data first.'); return; }
                 const students = esParseUpload(raw);
-                if (students.length === 0) { alert('No valid student records found. Check format.'); return; }
-
+                if (!students.length) { alert('No valid records found. Check format.'); return; }
                 const assignments = esRunAlgorithm(students);
                 localStorage.setItem('examSeatingData', JSON.stringify({ assignments, generatedAt: new Date().toISOString() }));
-                esRenderAll(assignments);
+                esRenderAll();
             };
 
             window.esRegenerate = function () {
@@ -1783,111 +1791,48 @@
             window.esClear = function () {
                 if (!confirm('Clear all seating data?')) return;
                 localStorage.removeItem('examSeatingData');
-                const inp = document.getElementById('esStudentInput');
-                if (inp) inp.value = '';
+                ['esStudentInput','esSearchInput'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
                 const res = document.getElementById('esSearchResult');
                 if (res) { res.className = 'asm-search-result'; res.innerHTML = ''; }
-                const srch = document.getElementById('esSearchInput');
-                if (srch) srch.value = '';
-                const output = document.getElementById('esGridOutput');
-                if (output) output.innerHTML = '<div class="asm-empty-state">Paste student list above and click <strong>Generate Seating</strong> to begin.</div>';
-                const statsEl = document.getElementById('esStats');
-                if (statsEl) statsEl.style.display = 'none';
+                const out = document.getElementById('esGridOutput');
+                if (out) out.innerHTML = '<div class="asm-empty-state">Paste student list above and click <strong>Generate Seating</strong> to begin.</div>';
+                const se = document.getElementById('esStats');
+                if (se) se.style.display = 'none';
             };
 
             window.esExport = function () {
                 const plan = JSON.parse(localStorage.getItem('examSeatingData') || 'null');
-                if (!plan) { alert('No seating plan to export. Generate one first.'); return; }
-
+                if (!plan) { alert('Generate a plan first.'); return; }
                 const gridOutput = document.getElementById('esGridOutput');
-                const printWin = window.open('', '_blank', 'width=1000,height=700');
-                printWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-<title>Exam Seating Plan</title>
-<style>
-body{font-family:Arial,sans-serif;padding:20px;}
-h1{font-size:1.3rem;margin-bottom:4px;}p{color:#666;font-size:12px;margin-bottom:14px;}
-.asm-room-block{border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:20px;break-inside:avoid;}
-.asm-room-title{font-weight:700;font-size:1rem;margin-bottom:2px;}
-.asm-room-meta{font-size:0.75rem;color:#888;margin-bottom:10px;}
-.asm-grid{display:grid;gap:6px;}
-.asm-grid.asm-regular{grid-template-columns:repeat(4,1fr);}
-.asm-grid.asm-drawing{grid-template-columns:repeat(5,1fr);}
-.asm-bench{border:1px solid #ccc;border-radius:6px;padding:6px;font-size:0.7rem;min-height:54px;}
-.asm-bench.full{border-color:#82e0aa;background:#eafaf1;}
-.asm-bench.occupied{border-color:#85c1e9;background:#eaf4fd;}
-.asm-bench.empty{border-style:dashed;}
-.asm-bench-num{color:#aaa;font-size:0.6rem;margin-bottom:3px;}
-.asm-seat{display:flex;gap:3px;padding:1px 0;}
-.asm-seat-pos{color:#aaa;font-size:0.58rem;width:8px;flex-shrink:0;}
-.asm-seat-name{font-weight:600;color:#222;font-size:0.68rem;}
-.asm-seat-reg{color:#5d8;font-size:0.6rem;}
-.asm-seat-yr{background:#2563eb;color:#fff;border-radius:2px;padding:0 3px;font-size:0.55rem;font-weight:700;}
-@media print{body{padding:10px;}.asm-room-block{page-break-inside:avoid;}}
-</style></head><body>
-<h1>📋 Exam Seating Plan</h1>
-<p>Generated: ${new Date(plan.generatedAt).toLocaleString()}</p>
-${gridOutput ? gridOutput.innerHTML : ''}
-<script>window.onload=function(){window.print();};<\/script>
-</body></html>`);
-                printWin.document.close();
+                const pw = window.open('', '_blank', 'width=1000,height=700');
+                pw.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Exam Seating Plan</title><style>body{font-family:Arial,sans-serif;padding:20px;}.asm-room-block{border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:20px;page-break-inside:avoid;}.asm-room-title{font-weight:700;}.asm-grid{display:grid;gap:6px;}.asm-grid.asm-regular{grid-template-columns:repeat(4,1fr);}.asm-grid.asm-drawing{grid-template-columns:repeat(5,1fr);}.asm-bench{border:1px solid #ccc;border-radius:6px;padding:6px;font-size:0.7rem;min-height:54px;}.asm-bench.full{border-color:#82e0aa;background:#eafaf1;}.asm-bench.occupied{border-color:#85c1e9;background:#eaf4fd;}.asm-bench.empty{border-style:dashed;}.asm-seat{display:flex;gap:3px;}.asm-seat-name{font-weight:600;font-size:0.68rem;}.asm-seat-reg{color:#5d8;font-size:0.6rem;}.asm-seat-yr{background:#2563eb;color:#fff;padding:0 3px;font-size:0.55rem;}</style></head><body><h1>Exam Seating Plan</h1><p>Generated: ' + new Date(plan.generatedAt).toLocaleString() + '</p>' + (gridOutput ? gridOutput.innerHTML : '') + '<script>window.onload=function(){window.print();};<\/script></body></html>');
+                pw.document.close();
             };
 
-            // ── Student search ────────────────────────────────────────────
             window.esSearchStudent = function () {
-                const query = (document.getElementById('esSearchInput') || {}).value || '';
-                const q = query.trim().toUpperCase();
-                const resultEl = document.getElementById('esSearchResult');
-                if (!resultEl) return;
-
-                if (!q) { resultEl.className = 'asm-search-result'; resultEl.innerHTML = ''; return; }
-
+                const q  = ((document.getElementById('esSearchInput') || {}).value || '').trim().toUpperCase();
+                const el = document.getElementById('esSearchResult');
+                if (!el) return;
+                if (!q) { el.className = 'asm-search-result'; el.innerHTML = ''; return; }
                 const plan = JSON.parse(localStorage.getItem('examSeatingData') || 'null');
-                if (!plan || !plan.assignments) {
-                    resultEl.className = 'asm-search-result visible';
-                    resultEl.innerHTML = '⚠️ No seating data found. Generate a plan first.';
-                    return;
-                }
-
+                if (!plan || !plan.assignments) { el.className = 'asm-search-result visible'; el.innerHTML = '&#9888; No seating data. Generate a plan first.'; return; }
                 let found = null;
                 for (const room of ES_CLASSROOMS) {
-                    const benches = plan.assignments[room.id];
-                    if (!benches) continue;
-                    for (const bench of benches) {
-                        if (bench.left && bench.left.regNo.toUpperCase() === q) {
-                            found = { room, bench, pos: 'Left', student: bench.left };
-                        } else if (bench.right && bench.right.regNo.toUpperCase() === q) {
-                            found = { room, bench, pos: 'Right', student: bench.right };
-                        }
-                        if (found) break;
+                    for (const bench of (plan.assignments[room.id] || [])) {
+                        if (bench.left  && bench.left.regNo.toUpperCase()  === q) { found = { room, bench, pos: 'Left',  student: bench.left  }; break; }
+                        if (bench.right && bench.right.regNo.toUpperCase() === q) { found = { room, bench, pos: 'Right', student: bench.right }; break; }
                     }
                     if (found) break;
                 }
-
-                if (found) {
-                    resultEl.className = 'asm-search-result visible';
-                    resultEl.innerHTML = `
-                    <strong>✅ Seat Found</strong><br>
-                    <strong>Name:</strong> ${found.student.name} &nbsp; <strong>Reg No:</strong> ${found.student.regNo} &nbsp; <strong>Year:</strong> ${found.student.year}<br>
-                    <strong>Classroom:</strong> ${found.room.name} &nbsp;&nbsp;
-                    <strong>Floor:</strong> ${found.room.floor} &nbsp;&nbsp;
-                    <strong>Bench No:</strong> ${found.bench.benchNum} &nbsp;&nbsp;
-                    <strong>Seat:</strong> ${found.pos} Seat
-                    (Row ${found.bench.row}, Column ${found.bench.col})`;
-                } else {
-                    resultEl.className = 'asm-search-result visible';
-                    resultEl.innerHTML = `<strong>❌ Not Found:</strong> No seat assigned for register number <strong>${q}</strong>. Please check the register number or regenerate the seating plan.`;
-                }
+                el.className = 'asm-search-result visible';
+                el.innerHTML = found
+                    ? '<strong>&#9989; Seat Found</strong><br><strong>Name:</strong> ' + found.student.name + ' &nbsp; <strong>Reg:</strong> ' + found.student.regNo + '<br><strong>Classroom:</strong> ' + found.room.name + ' &nbsp; <strong>Bench:</strong> ' + found.bench.benchNum + ' &nbsp; <strong>Seat:</strong> ' + found.pos
+                    : '<strong>&#10060; Not Found:</strong> No seat for <strong>' + q + '</strong>. Check reg number or regenerate.';
             };
 
-            // ── Auto-load saved plan if tab is opened ─────────────────────
-            // Called by switchAdminTab override below
-            window.esLoadSaved = function () {
-                esRenderAll();
-            };
-
+            window.esLoadSaved = function () { esRenderAll(); };
         })();
     </script>
 
 </body>
-
 </html>
