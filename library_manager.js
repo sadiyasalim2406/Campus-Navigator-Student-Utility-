@@ -51,7 +51,7 @@ const LibraryManager = {
         };
     },
 
-    issueBook: function (bookId, userEmail) {
+    issueBook: function (bookId, userEmail, studentName) {
         const books = this.getBooks();
         const bookIndex = books.findIndex(b => b.id == bookId);
 
@@ -65,7 +65,9 @@ const LibraryManager = {
                 bookId,
                 bookTitle: books[bookIndex].title,
                 userEmail,
+                studentName: studentName || userEmail || 'Unknown',
                 borrowDate: new Date().toISOString(),
+                timestamp: new Date().toISOString(),
                 status: 'Borrowed'
             });
             localStorage.setItem(this.ISSUED_KEY, JSON.stringify(issued));
